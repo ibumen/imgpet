@@ -1,0 +1,117 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+{% block stylesheet %}
+    #transactiontable tr td:first-child{
+    font-weight:bold;
+    }
+    .transactionpagelink li{
+    border-bottom-style:dotted;
+    border-bottom-width: 1px;
+    padding-bottom: 1px;
+    }
+    .transactionpagelink li a{
+    color: rgb(104, 106, 118);
+    font-family: "Poppins", san-serif;
+    font-weight:300;
+    font-size: 14px;
+    padding:5px;
+    }
+    .icn{
+    font-size:30px;
+    }
+
+{% endblock stylesheet %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="container no-padding">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!--<form class="form-inline">
+                                        <div class="form-group">
+                                            <input type="text" id="oid" class="form-control-sm mr-3" placeholder="Order ID">
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-primary btn-sm">Load</button>
+                                        </div>
+                                    </form>-->
+                                    {{form(form)}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if(transaction is defined) %}
+                    {% set orderamt = (transaction.getOrder().getQuantity() * transaction.getOrder().getUnitPrice()) %}
+                    <div class="card">
+                        <div class="card-header d-flex align-content-center">
+                            <h3 class="h4">{{transaction.getTid()}}</h3>
+                        </div>
+                        <div class="card-body">                    
+                            <table id="ordertable" class="table table-striped table-sm table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td>Transaction Id: </td><td><b>{{transaction.tid}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Transaction: </td><td>{{transaction.transDate|date('D jS F, Y')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Entry: </td><td>{{transaction.dateRecorded|date('D jS F, Y')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Entered By: </td><td class='toverflow'>{{transaction.committedBy.getFullName()}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Order: </td><td class='toverflow'>{{transaction.order.getOid()}} ({{transaction.order.customer.getFullName()}})</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Amount Paid: </td><td>&#8358;{{transaction.amountPaid|number_format(2,'.',',')}}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Method of Payment: </td><td>{{transaction.paymentMethod|capitalize}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Amt Due Before Payment: </td><td>&#8358;{{(orderamt-amtpaidbefore)|number_format(2,'.',',')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Amt Due After Payment: </td><td>&#8358;{{(orderamt-amtpaidafter)|number_format(2,'.',',')}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="col-lg-3">
+                {% if(transaction is defined) %}
+                    <section class="no-padding-bottom no-margin-top no-padding-top">
+                        <div class="container ">
+                            <div class="row bg-white has-shadow">
+                                <div class="col">
+                                    <div class="title" style="text-align: center;"><i class="icn ion-wrench"></i><br />ACTIONS</div>
+                                    <div class="item d-flex">
+                                        <div style="min-height: 100%;" class="content">
+                                            <ul class="list-unstyled transactionpagelink">
+                                                <li><a href="{{path('addtransaction',{"orderid":transaction.order.id})}}"><span class="icon-check"> </span> Add Transaction</a></li>
+                                                <li><a href="#"><span class="icon ion-ios-trash-outline"> </span> Delete This Trxn</a></li>
+                                                <li><a href="#"><span class="icon ion-ios-undo-outline"> </span> Refund This Trxn</a></li>
+                                                <li><a href="{{path('listtransaction',{"orderid":transaction.order.id})}}"><span class="icon ion-ios-eye-outline"> </span> View All Trxn</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

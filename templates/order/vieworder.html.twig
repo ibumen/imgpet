@@ -1,0 +1,191 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+{% block stylesheet %}
+    #ordertable tr td:first-child{
+    font-weight:bold;
+    }
+    .orderpagelink li{
+    border-bottom-style:dotted;
+    border-bottom-width: 1px;
+    padding-bottom: 1px;
+    }
+    .orderpagelink li a{
+    color: rgb(104, 106, 118);
+    font-family: "Poppins", san-serif;
+    font-weight:300;
+    font-size: 14px;
+    padding:5px;
+    }
+    .icn{
+    font-size:30px;
+    }
+
+{% endblock stylesheet %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="container no-padding">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!--<form class="form-inline">
+                                        <div class="form-group">
+                                            <input type="text" id="oid" class="form-control-sm mr-3" placeholder="Order ID">
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-primary btn-sm">Load</button>
+                                        </div>
+                                    </form>-->
+                                    {{form(form)}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if(order is defined) %}
+                    <div class="card">
+                        <div class="card-header d-flex align-content-center">
+                            <h3 class="h4">{{order.getOid()}}</h3>
+                        </div>
+                        <div class="card-body">                    
+                            <table id="ordertable" class="table table-striped table-sm table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td>Order Id: </td><td>{{order.oid}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Order: </td><td>{{order.orderDate|date('D jS F, Y')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Entry: </td><td>{{order.dateRecorded|date('D jS F, Y')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Entered By: </td><td class='toverflow'>{{order.salesPerson.getFullName()}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ordered By: </td><td class='toverflow'><a href='{{path('viewcustomer',{'customerid':order.customer.id})}}'>{{order.customer.getFullName()}}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Product: </td><td>{{order.product.getProductName()~'('~order.product.getProductCode()~')'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Unit Price (per {{order.product.getUnitMetric()|capitalize}}): </td><td>&#8358;{{order.unitPrice|number_format(2,'.',',')}}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quantity: </td><td>{{order.quantity}} {{order.product.getUnitMetric()|capitalize}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Amount Payable: </td><td>&#8358;{{(order.getAmountPayable())|number_format(2,'.',',')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Amount Due: </td><td>&#8358;{{(order.getAmountDue())|number_format(2,'.',',')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>No. of Transactions: </td><td>{{order.transactions|length}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status: </td><td>{{order.orderStatus|capitalize}}</td>
+                                    </tr>
+                                    {% if order.orderStatus != 'active' %}
+                                        <tr>
+                                            <td>Date closed/cancelled: </td><td>{{order.dateClosed|date('D jS F, Y')}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Closed By: </td><td>{{order.closedBy.getFullName()}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Closing Remark: </td><td>{{order.closingRemark}}</td>
+                                        </tr>
+
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <section class="no-padding-bottom no-margin-top no-padding-top">
+                        <div class="container ">
+
+                            <div class="row bg-white has-shadow">
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title" style="text-align: center;"><i class="icn icon-bill"></i><br />ORDER</div>
+                                    <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
+                                        <div class="content">
+                                            <ul class="list-unstyled orderpagelink">
+                                                <li><a href="{{(order.transactions|length >0)?"javascript:void(0);":path('editorder',{'orderid':order.id})}}"><span class="icon-bill"> </span> Modify Order</a></li>
+                                                <li><a href="{{(order.transactions|length >0)?"javascript:void(0);":"#"}}"><span class="icon ion-ios-trash-outline"> </span> Delete Order</a></li>
+                                                <li><a href="{{(order.transactions|length >0)?"javascript:void(0);":"#"}}"><span class="icon ion-locked"> </span> Close Order</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title" style="text-align: center;"><i class="icn icon-check"></i><br />TRANSACTION</div>
+                                    <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
+                                        <div style="min-height: 100%;" class="content">
+                                            <ul class="list-unstyled orderpagelink">
+                                                <li><a href="{{(order.orderstatus!='active')?"javascript:void(0);":path('addtransaction',{'orderid':order.id})}}"><span class="icon-check"> </span> Add Transaction</a></li>
+                                                <li><a href="{{path('viewtransaction',{'id':order.id, 'transid':'last-order'})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Trxn</a></li>
+                                                <li><a href="{{path('listtransaction',{'orderid':order.id})}}"><span class="icon ion-ios-eye-outline"> </span> View All Trxn</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title" style="text-align: center;"><i class="icn icon ion-ios-undo-outline"></i><br />REFUND</div>
+                                    <div class="item d-flex">
+                                        <div class="content">
+                                            <ul class="list-unstyled orderpagelink">
+                                                <li><a href="#"><span class="icon ion-ios-undo-outline"> </span> Refund Order</a></li>
+                                                <li><a href="#"><span class="icon ion-ios-eye-outline"> </span> View Refunds</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                {% endif %}
+
+            </div>
+            <div class="col-lg-3">
+                {% if(order is defined) %}
+                    <div class="row">
+                        <div class="statistics col-12">
+                            <div class="statistic d-flex align-items-center bg-white has-shadow">
+                                <div class="text">
+                                    <small>Summary of All Trxns (This Order) </small> <br />
+                                    No. of Transactions: <br /><b>{{order.transactions|length}}</b><br />
+                                    Total Amt Paid: <br /><b>&#8358;{{order.getAmountPaid()|number_format(2,'.',',')}}</b><br />
+                                    Outstanding Bal.:<br /><b style="color:red;">&#8358;{{order.getAmountDue()|number_format(2,'.',',')}}</b>                            
+                                </div>
+                            </div>
+                            <div class="statistic d-flex align-items-center bg-white has-shadow">
+                                <div class="text">
+                                    <small>Summary of Last Trxn (This Order)</small><br />
+                                    {% if order.transactions|length > 0 %}
+                                    Trxn Date: <br /><b>{{order.getLastTransaction().getTransDate()|date('d/m/Y h:iA')}}</b><br />
+                                    Amt Paid: <br /><b>&#8358;{{order.getLastTransaction().getAmountPaid()|number_format(2,'.',',')}}</b><br />
+                                    Method of Payment: <br /><b>{{order.getLastTransaction().getPaymentMethod()|capitalize}}</b>
+                                    {% else %}
+                                        No Transaction
+                                        {% endif %}
+                                </div>
+                            </div>
+                            <div class="statistic d-flex align-items-center bg-white has-shadow">
+                                <div class="text">
+                                    <small># of Refunds</small><br />
+                                    <b>0</b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

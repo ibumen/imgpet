@@ -1,0 +1,44 @@
+security:
+    # https://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    encoders: 
+        App\Entity\User:
+            algorithm: bcrypt
+            cost: 12
+    providers:
+        myprovider:
+            entity:
+                class: App\Entity\User
+                property: username
+    
+    #access_control:
+        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+   
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        login_firewall:
+            pattern:   ^/login$
+            anonymous: ~
+        main:
+            #anonymous: ~
+            provider: myprovider
+            form_login:
+                login_path: login
+                check_path: logincheck
+                use_forward: true
+                use_referer: true
+                csrf_token_generator: security.csrf.token_manager
+            logout:
+                path: /logout
+                target: /login
+            #pattern: ^/
+            #provider: myprovider
+
+            # activate different ways to authenticate
+
+            # http_basic: ~
+            # https://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: ~
+            # https://symfony.com/doc/current/cookbook/security/form_login_setup.html

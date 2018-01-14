@@ -1,0 +1,181 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+{% block stylesheet %}
+    #custtable tr td:first-child{
+    font-weight:bold;
+    }
+    .customerpagelink li{
+    border-bottom-style:dotted;
+    border-bottom-width: 1px;
+    padding-bottom: 1px;
+    }
+    .customerpagelink li a{
+    color: rgb(104, 106, 118);
+    font-family: "Poppins", san-serif;
+    font-weight:300;
+    font-size: 14px;
+    padding:5px;
+    }
+    .icn{
+    font-size:30px;
+    }
+
+{% endblock stylesheet %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="container no-padding">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!--<form class="form-inline">
+                                        <div class="form-group">
+                                            <input type="text" id="cid" class="form-control-sm mr-3" placeholder="Customer Unique ID">
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-primary btn-sm">Load</button>
+                                        </div>
+                                    </form>-->
+                                    {{form(form)}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if(customer is defined) %}
+                    <div class="card">
+                        <div class="card-header d-flex align-content-center">
+                            <h3 class="h4">{{customer.getFullName()}}</h3>
+                        </div>
+                        <div class="card-body">                    
+                            <table id="custtable" class="table table-striped table-sm table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td>Customer Unique Id: </td><td><b>{{customer.cid}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Full Name: </td><td>{{customer.getTitle()}} {{customer.getFullName()}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date Registered: </td><td>{{customer.dateReg|date('D jS F, Y')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email: </td><td>{{customer.email?:'nil'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mobile No.: </td><td>{{customer.mobileNo?:'nil'}}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Address: </td><td>{{customer.address?:'nil'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status: </td><td>{{customer.status|capitalize}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <section class="no-padding-bottom no-margin-top no-padding-top">
+                        <div class="container ">
+
+                            <div class="row bg-white has-shadow">
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title" style="text-align: center;"><i class="icn icon-bill"></i><br />ORDER</div>
+                                    <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
+                                        <div class="content">
+                                            <ul class="list-unstyled customerpagelink">
+                                                <li><a href="{{path('addorder',{'customerid':customer.id})}}"><span class="icon-bill"> </span> Place New Order</a></li>
+                                                <li><a href="{{path('listorder',{'customerid':customer.id})}}"><span class="icon ion-clipboard"> </span> List of All Orders</a></li>
+                                                <li><a href="{{path('listorder',{'customerid':customer.id, 'status':'active'})}}"><span class="icon ion-clipboard"> </span> Unsettled Orders</a></li>
+                                                <li><a href="{{path('vieworder', {'orderid':'last', 'customerid':customer.id})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Order</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title" style="text-align: center;"><i class="icn icon-check"></i><br />TRANSACTION</div>
+                                    <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
+                                        <div style="min-height: 100%;" class="content">
+                                            <ul class="list-unstyled customerpagelink">
+                                                <li><a href="{{path('maketransaction',{'customerid':customer.id})}}"><span class="icon-check"> </span> Add Transaction</a></li>
+                                                <li><a href="{{path('viewtransaction',{'id':customer.id,'transid':'last-customer'})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Trxn</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title" style="text-align: center;"><i class="icn icon-user"></i><br />ACCOUNT</div>
+                                    <div class="item d-flex">
+                                        <div class="content">
+                                            <ul class="list-unstyled customerpagelink">
+                                                <li><a href="{{path('editcustomer', {'customerid':customer.id})}}"><span class="icon ion-edit"> </span> Modify Account</a></li>
+                                                <li><a href="#"><span class="icon ion-ios-toggle-outline"> </span> Set Active/Inactive</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                {% endif %}
+
+            </div>
+            <div class="col-lg-3">
+                {% if(customer is defined) %}
+                    <div class="row">
+                        <div class="statistics col-12">
+                            <div class="statistic d-flex align-items-center bg-white has-shadow">
+                                <div class="text">
+                                    <small>Summary of Last Order </small> <br />
+                                    {% if lastorder is defined and lastorder is not empty %}
+                                        Order: <br /><b>{{lastorder.getOid()}}</b><br />
+                                        Total Amt: <br /><b>&#8358;{{lastorder.getAmountPayable()|number_format(2,'.',',')}}</b><br />
+                                        Amt Paid: <br /><b style="color:#078230;">&#8358;{{lastorder.getAmountPaid()|number_format(2,'.',',')}}</b><br />
+                                        Amt Due:<br /><b style="color:red;">&#8358;{{lastorder.getAmountDue()|number_format(2,'.',',')}}</b> 
+                                    {% else %}
+                                        No Order
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="statistic d-flex align-items-center bg-white has-shadow">
+                                <div class="text">
+                                    <small>Summary of Last Transaction</small><br />
+                                    {% if lasttrxn is defined and lasttrxn is not empty %}
+                                        Trxn Date: <br /><b>{{lasttrxn.transDate|date('d/m/Y h:iA')}}</b><br />
+                                        Trxn: <br /><b>{{lasttrxn.getTid()}}</b><br />
+                                        Order: <br /><b>{{lasttrxn.order.getOid()}}</b><br />
+                                        Amt Paid: <br /><b style="color:#078230;">&#8358;{{lasttrxn.amountPaid|number_format(2,'.',',')}}</b>
+                                        {% else %}
+                                            No Transaction
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="statistic d-flex align-items-center bg-white has-shadow">
+                                <div class="text">
+                                    <small>Total Amt Due (All Orders)</small><br />
+                                    {% set tad =0 %}
+                                    {% for odrs in unsettledorder %}
+                                        {% set tad = tad + odrs.getAmountDue() %}
+                                        {% endfor %}
+                                    <b style="color:red;">&#8358;{{tad|number_format(2,'.',',')}}</b>
+                                </div>
+                            </div>
+                            <div class="statistic d-flex align-items-center bg-white has-shadow">
+                                <div class="text">
+                                    <small># of Unsettled Sales Orders</small><br />
+                                    <b>{{unsettledorder|length}}</b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

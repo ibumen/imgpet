@@ -1,0 +1,194 @@
+{# global variable declarations #}
+{% set TruckPages = ["listtruckowner", "addtruckowner", "edittruckowner","listtruck", "addtruck", "edittruck"] %}
+{% set UserPages = ["listuser", "adduser"] %}
+{% set ProductPages = ["listproduct", "addproduct", "editproduct"] %}
+{% set CustomerPages = ["listcustomer", "addcustomer", "editcustomer", "viewcustomer"] %}
+{% set OrderPages = ["listorder", "vieworder", "listtransaction", "viewtransaction", "addorder", "addtransaction", "editorder", "edittransaction"] %}
+{% set ReportPages = ["salesreport"] %}
+{% if page is not defined %}
+    {% if (app.request.getPathInfo()|slice(0, 8)) == '/_error/' %}
+        {% set page = "errorpage" %}
+    {% endif %}
+{% endif %}
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% block title %}IMG Petrolueum{% endblock title%}</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block corelinks %}
+            <!-- Bootstrap CSS-->
+            <link rel="stylesheet" href="{{asset('vendor/bootstrap/css/bootstrap.min.css')}}">
+            <!-- Font Awesome CSS-->
+            <link rel="stylesheet" href="{{asset('vendor/font-awesome/css/font-awesome.min.css')}}">
+            <!-- Fontastic Custom icon font-->
+            <link rel="stylesheet" href="{{asset('css/fontastic.css')}}">
+            <!-- Ionicon Custom icon font-->
+            <link rel="stylesheet" href="{{asset('vendor/ionicon/css/ionicons.min.css')}}">
+            <!-- Google fonts - Poppins -->
+            <link rel="stylesheet" href="{{asset('css/googlefontspoppins300_400_700.css')}}">
+            <!-- theme stylesheet-->
+            <link rel="stylesheet" href="{{asset('css/style.default.css')}}" id="theme-stylesheet">
+            <!-- Custom stylesheet - for your changes-->
+            <link rel="stylesheet" href="{{asset('css/custom.css')}}">
+        {% endblock corelinks %}
+        {% block links %} 
+        {% endblock links %}  
+        <style>
+            {% block stylesheet %} 
+            {% endblock stylesheet %}  
+        </style>
+        <!-- Favicon-->
+        <link rel="shortcut icon" href="{{asset('img/favicon.ico')}}">
+    </head>
+    <body>
+        {% block body %}
+            <div class="page">
+
+                <!-- Main Navbar-->
+                <header class="header">
+                    {% block mainnavbar %}
+                        <nav class="navbar">
+                            <div class="container-fluid">
+                                <div class="navbar-holder d-flex align-items-center justify-content-between">
+                                    <!-- Navbar Header-->
+                                    <div class="navbar-header">
+                                        <!-- Navbar Brand --><a href="index.html" class="navbar-brand">
+                                            <div class="brand-text brand-big"><span>IMG </span><strong>PET</strong></div>
+                                            <div class="brand-text brand-small"><strong>IMG</strong></div></a>
+                                        <!-- Toggle Button--><a id="toggle-btn" href="#" class="menu-btn active"><span></span><span></span><span></span></a>
+                                    </div>
+                                    <!-- Navbar Menu -->
+                                    <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
+                                        <!-- Logout    -->
+                                        <li class="nav-item"><a href="{{path('logout')}}" class="nav-link logout">Logout<i class="fa fa-sign-out"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    {% endblock mainnavbar %}
+                </header>
+                <div class="page-content d-flex align-items-stretch"> 
+
+                    <!-- Side Navbar -->
+                    <nav class="side-navbar">
+                        {% block sidenavbar %}   
+                            <!-- Sidebar Header-->
+                            <div class="sidebar-header d-flex align-items-center">
+                                <div class="avatar"><img src="{{asset('img/avatar-1.jpg')}}" alt="..." class="img-fluid rounded-circle"></div>
+                                <div class="title">
+                                    <h1 class="h4">{{app.user.getFullName()}}</h1>
+                                    
+                                </div>
+                            </div>
+                            <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
+                            <ul class="list-unstyled">
+                                <li {{ page=="home"?"class='active'":""}}><a href="{{path('home')}}"> <i class="icon-home"></i>Home </a></li>
+                                <li><a {{ (page in UserPages)?"":"collapse"}} href="#useractionDropdown" aria-expanded="{{ (page in UserPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-people-outline"></i>Users </a>
+                                    <ul id="useractionDropdown" class="collapse list-unstyled {{ (page in UserPages)?"show":""}}">
+                                        <li {{ page=="listuser"?"class='active'":""}}><a href="{{path('listuser')}}"><i class="icon ion-ios-list-outline"> </i> List Users</a></li>
+                                        <li {{ page=="adduser"?"class='active'":""}}><a href="{{path('adduser')}}"><i class="icon ion-ios-personadd-outline"> </i> Add New User</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in TruckPages)?"":"collapse"}} href="#truckowneractionDropdown" aria-expanded="{{ (page in TruckPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-android-bus"></i>Truck</a>
+                                    <ul id="truckowneractionDropdown" class="collapse list-unstyled {{ (page in TruckPages)?"show":""}}">
+                                        <li {{ page=="listtruckowner"?"class='active'":""}}><a href="{{path('listtruckowner')}}"><i class="icon ion-ios-list-outline"> </i> List Truck Owners</a></li>
+                                        <li {{ page=="addtruckowner"?"class='active'":""}}><a href="{{path('addtruckowner')}}"><i class="icon ion-ios-personadd-outline"> </i> Add New Truck Owner</a></li>
+                                        <li {{ page=="listtruck"?"class='active'":""}}><a href="{{path('listtruck')}}"><i class="icon ion-ios-list-outline"> </i> List Truck</a></li>
+                                        <li {{ page=="addtruck"?"class='active'":""}}><a href="{{path('addtruck')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Truck</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in ProductPages)?"":"collapse"}} href="#prodactionDropdown" aria-expanded="{{ (page in ProductPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-box-outline"></i>Product </a>
+                                    <ul id="prodactionDropdown" class="collapse list-unstyled {{ (page in ProductPages)?"show":""}}">
+                                        <li {{ page=="listproduct"?"class='active'":""}}><a href="{{path('listproduct')}}"><i class="icon ion-ios-list-outline"> </i> List Products</a></li>
+                                        <li {{ page=="addproduct"?"class='active'":""}}><a href="{{path('addproduct')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Product</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in CustomerPages)?"":"collapse"}} href="#custactionDropdown" aria-expanded="{{ (page in CustomerPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-person"></i>Customer </a>
+                                    <ul id="custactionDropdown" class="collapse list-unstyled {{ (page in CustomerPages)?"show":""}}">
+                                        <li {{ page=="listcustomer"?"class='active'":""}}><a href="{{path('listcustomer')}}"><i class="icon ion-ios-list-outline"> </i> List Customers</a></li>
+                                        <li {{ page=="addcustomer"?"class='active'":""}}><a href="{{path('addcustomer')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Customer</a></li>
+                                        <li {{ page=="viewcustomer"?"class='active'":""}}><a href="{{path('vcustomer')}}"><i class="icon ion-ios-eye-outline"> </i> View Customer</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in OrderPages)?"":"collapse"}} href="#orderactionDropdown" aria-expanded="{{ (page in OrderPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon-bill"></i>Order </a>
+                                    <ul id="orderactionDropdown" class="collapse list-unstyled {{ (page in OrderPages)?"show":""}}">
+                                        <li {{ page=="listorder"?"class='active'":""}}><a href="{{path('listorder')}}"><i class="icon ion-ios-list-outline"> </i> List Orders</a></li>
+                                        <li {{ page=="addorder"?"class='active'":""}}><a href="{{path('addorder')}}"><i class="icon ion-ios-plus-outline"> </i> Place an Order</a></li>
+                                        <li {{ page=="vieworder"?"class='active'":""}}><a href="{{path('vorder')}}"><i class="icon ion-ios-eye-outline"> </i> View Order</a></li>
+                                        <li {{ page=="listtransaction"?"class='active'":""}}><a href="{{path('listtransaction')}}"><i class="icon ion-ios-list-outline"> </i> List Transactions</a></li>
+                                        <li {{ page=="addtransaction"?"class='active'":""}}><a href="{{path('addtransaction')}}"><i class="icon ion-ios-plus-outline"> </i>Make a Transaction</a></li>
+                                        <li {{ page=="viewtransaction"?"class='active'":""}}><a href="{{path('vtransaction')}}"><i class="icon ion-ios-eye-outline"> </i> View Transaction</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in ReportPages)?"":"collapse"}} href="#reportactionDropdown" aria-expanded="{{ (page in ReportPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon-page"></i>Report </a>
+                                    <ul id="reportactionDropdown" class="collapse list-unstyled {{ (page in ReportPages)?"show":""}}">
+                                        <li {{ page=="salesreport"?"class='active'":""}}><a href="#"><i class="icon-page"> </i> Sales Report</a></li>
+                                    </ul>
+                                </li>
+                            {% endblock sidenavbar %}  
+                    </nav>
+                    <div class="content-inner">
+
+                        <!-- Page Header-->
+                        <header class="page-header">
+                            <div class="container-fluid">
+                                <h2 class="no-margin-bottom">
+                                    {% if (page in UserPages) %}
+                                        Manage Users
+                                    {% elseif (page in TruckPages) %}
+                                        Manage Trucks and Truck Owners
+                                    {% elseif (page in CustomerPages) %}
+                                        Manage Customers
+                                    {% elseif (page in ProductPages) %}
+                                        Manage Products
+                                    {% elseif (page in OrderPages) %}
+                                        Manage Orders, Transactions and Refunds
+                                    {% endif %}                                                        
+                                </h2>
+                            </div>
+                        </header><br />
+                        {% block content %} 
+                        {% endblock content %}
+                        <br />
+                        <!-- Page Footer-->
+                        <footer class="main-footer">
+                            {% block footer %}  
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <p>IMG Petroleum Marketing &copy; {{"now"|date('Y')}}</p>
+                                        </div>
+                                        <div class="col-sm-6 text-right">
+                                            <p>Design by <a href="http://www.bitssense.com" class="external" style="background-color:#ffffff; padding-left:3px; padding-right: 3px; text-shadow: 0px 0px 0.2px #ffffff;"><b style="color:black; ">Bits</b><b style="color: #1388da;">Sense</b></a> Ltd</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endblock footer %}  
+                        </footer>
+
+                    </div>
+                </div>
+            </div>
+            {% block corescripts %}  
+                <!-- Javascript files-->
+                <script src="{{asset('vendor/jquery/jquery.min.js')}}"></script>
+                <script src="{{asset('vendor/popper.js/umd/popper.min.js')}}"></script>
+                <script src="{{asset('vendor/bootstrap/js/bootstrap.min.js')}}"></script>
+                <script src="{{asset('vendor/jquery.cookie/jquery.cookie.js')}}"></script>
+                <!--<script src="{{asset('vendor/chart.js/Chart.min.js')}}"></script>-->
+                <!--<script src="{{asset('vendor/jquery-validation/jquery.validate.min.js')}}"></script>-->
+                <!-- Main File-->
+                <script src="{{asset('js/front.js')}}"></script>
+            {% endblock corescripts %}  
+            {% block scripts %} 
+            {% endblock scripts %} 
+            {% block js %}  
+            {% endblock js %}  
+        {% endblock body %}
+    </body>
+</html>

@@ -1,0 +1,18 @@
+/* your styles go here */
+a i.icon {
+    -webkit-transform: translateY(3px);
+    transform: translateY(3px);
+}
+
+table, table tr, table tr td{
+    font-size: 14px;
+    font-weight: 300;
+}
+div.listdiv{
+    overflow: auto; 
+}
+.toverflow{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

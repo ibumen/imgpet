@@ -1,0 +1,102 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+{% block content %}
+    <div class='container'>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header d-flex align-content-center">
+                        <h3 class="h4">List of Transactions
+                            {% if order is defined %}
+                                from {{order.getOid()~' ('~order.getCustomer().getFullName()~')'}}
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class="card-body">   
+                        <form name="filterfrm" id ="filterfrm">
+                            <div class="row">
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="sortby">Sort By: </label>
+                                        <select id="sortby" class="form-control custom-select-sm custom-select">
+                                            <option value='asc'>Date Ascending</option>
+                                            <option value='desc'>Date Decending</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label for="sortby">Payment Mode: </label>
+                                        <select id="sortby" class="form-control custom-select-sm custom-select">
+                                            <option value =''>All</option>
+                                            {% for paymode in paymodes %}
+                                                <option value ='{{paymode}}'>{{paymode|upper}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="from">From: </label>
+                                        <input type="text" class="form-control form-control-sm" id="from" placeholder="yyyy-mm-dd" />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">                                
+                                        <label for="to">To: </label>
+                                        <input type="text" class="form-control form-control-sm" id="to" placeholder="yyyy-mm-dd" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-11'>                                
+                                </div>
+                                <div class='col-1'>
+                                    <div class="form-group">
+                                        <button class='btn btn-primary btn-sm'>Load</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <hr />
+                        <div id='trxnlistdiv' class='listdiv'>
+                            {% if order is defined %}
+                                <div class='alert alert-primary'>
+                                    <b>ORDER:</b> {{order.getOid()}} ({{order.getCustomer().getFullName()}}) | <b>AMOUNT PAYABLE:</b> &#8358;{{order.getAmountPayable()|number_format(2,'.',',')}} | <b>AMOUNT PAID:</b> &#8358;{{order.getAmountPaid()|number_format(2,'.',',')}}
+                                </div>
+                            {% endif %}
+                            <table class="table table-striped table-sm table-bordered table-hover">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>#</th><th>Trxn Date</th><th>Trxn ID</th><th>Order</th><th>Amt Paid</th>
+                                            {% if order is defined %}
+                                            <th>Cumm. Amt Paid</th>
+                                            <th>Amt Due</th>
+                                            {% endif %}
+                                        <th>Mode of Payment</th>                                
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in transactions %}
+                                        <tr>
+                                            <td>{{loop.index}}</td>
+                                            <td>{{transaction.transDate|date('d/m/Y h:ia')}}</td>
+                                            <td><a href="{{path("viewtransaction",{"transid":transaction.id})}}">{{transaction.tid}}</a></td>
+                                            <td class='toverflow'><a href="{{path("vieworder",{"orderid":transaction.order.id})}}">{{transaction.order.getOid()}}</a> (<a href="{{path('viewcustomer',{'customerid':transaction.order.getCustomer().id})}}">{{transaction.order.getCustomer().getFullName()}}</a>)</td>
+                                            <td>&#8358;{{transaction.amountPaid()|number_format(2,'.',',')}}</td>
+                                            {% if order is defined %}
+                                                <td>&#8358;{{(transaction.order.getAmountPaidAfterTransaction(transaction))|number_format(2,'.',',')}}</td>
+                                                <td>&#8358;{{(transaction.order.getAmountDueAfterTransaction(transaction))|number_format(2,'.',',')}}</td>
+                                            {% endif %}
+                                            <td>{{transaction.paymentMethod}}</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
