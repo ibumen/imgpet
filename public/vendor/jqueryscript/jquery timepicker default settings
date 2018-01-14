@@ -1,3 +1,5 @@
+lookup doc: https://xdsoft.net/jqplugins/datetimepicker/
+
  $(".date").datetimepicker({
         format: 'Y-m-d H:i:s',
 	formatTime: 'H:i',
