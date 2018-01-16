@@ -1,0 +1,40 @@
+<div style="width:100%; background-color: #EBEBEB; padding-top:30px; padding-bottom:30px; font-family: arial; font-size: 14px;">         
+
+    <div style="padding: 10px; width:70%; margin-left: auto; margin-right: auto;background-color:#ffffff;border-radius:4px; box-shadow:  2px 2px 2px 2px #cccccc">
+
+        <div>
+            <img src="{{absolute_url(asset('img/logo.png'))}}" style="width:50px; height: 50px;"/> <span style="font-size: 25px; font-weight: bold;">IMG PETROLEUM MARKETER</span>
+            <span style="float:right; color:#cccccc"><a style="color:#999999; text-decoration: none;" href="#">Our Site</a> | <a style="color:#999999; text-decoration: none;" href="#">About Us</a> | <a style="color:#999999; text-decoration: none;" href="#">Contact Us</a></span>
+        </div>
+        <hr style="color:#cccccc; border-style: solid; width: 90%; border-width: 1px;"/>
+        <h2 style="text-align: center;">Payment Successfully Made!</h2>
+        <p>Hello {{trxn.order.getCustomer().getFullName()}},</p>
+
+        <p>
+            Payment for Order {{trxn.order.getOid()}} has been accepted. Here are the details of this transaction for your reference:
+        </p>
+        <table>
+            <tr><td style="font-weight: bold;">Transaction ID:</td><td>{{trxn.getTid()}}</td></tr>
+            <tr><td style="font-weight: bold;">Order ID:</td><td>{{trxn.order.getOid()}}</td></tr>
+            <tr><td style="font-weight: bold;">Transaction Date:</td><td>{{trxn.getTransDate()|date('Y-m-d H:iA')}}</td></tr>
+            <tr><td style="font-weight: bold;">Amount Paid:</td><td>&#8358;{{trxn.getAmountPaid()|number_format(2,'.',',')}}</td></tr>
+            <tr><td style="font-weight: bold;">Outstanding Balance:</td><td>&#8358;{{trxn.order.getAmountDue()|number_format(2,'.',',')}}</td></tr>
+            <tr><td style="font-weight: bold;">Mode of Payment:</td><td>{{trxn.getPaymentMethod()|upper}}</td></tr>
+            <tr><td style="font-weight: bold;">Order Status:</td><td>{{trxn.order.getOrderStatus()|upper}}</td></tr>
+        </table><br />
+        We hope to see you again soon.
+<br /><br />
+        <p>
+            Sincerely,<br/>
+            IMG Petroleum Marketers.<br />
+            {{trxn.getTransDate()|date('Y-m-d H:iA')}}
+        </p>
+        <br /><br />
+        <small style="color:#666666;">
+            By making a transaction, you agree to IMG Petroleum’s Privacy Notice and Conditions of Use. 
+            Unless otherwise noted, petroleum products sold by IMG Pet. are subject to sales tax in accordance with the applicable laws. 
+        </small> <br /><br />
+        <small style="color: #666666;">This email was sent from a notification-only address that cannot accept incoming email. Please do not reply to this message.</small>
+    </div>           
+
+</div>

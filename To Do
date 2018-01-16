@@ -7,3 +7,7 @@ change the format for generating orderid and transaction id
 ensure that transactions do no exceed maximum payable
 
 ondelete and unupdate ddl statements
+
+include error message on login form
+
+add resend notification email on order and transaction

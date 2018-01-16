@@ -25,7 +25,7 @@ class TransactionRepository extends ServiceEntityRepository {
 
     public function getAmtPaidAfter($tid, $oid) {
         return $this->createQueryBuilder('t')->select('sum(t.amountPaid) as sumamt')
-                        ->where('t.id >= :tid')
+                        ->where('t.id <= :tid')
                         ->andWhere('t.order= :oid')
                         ->setParameter('tid', $tid)
                         ->setParameter('oid', $oid)

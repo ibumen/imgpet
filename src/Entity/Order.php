@@ -133,11 +133,6 @@ class Order {
      */
     private $closedBy;
 
-    /** Unmapped */
-    private $amtpaid;
-    private $amtdue;
-    private $lasttrxn;
-
     public function getId() {
         return $this->id;
     }
@@ -248,11 +243,26 @@ class Order {
         return $this->transactions;
     }
 
+    public function addTransaction($transaction) {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setOrder($this);
+        }
+    }
+
     /**
      * @return Collection|Refund[]
      */
     public function getRefunds() {
         return $this->refunds;
+    }
+
+    public function addRefund($refund) {
+
+        if (!$this->refunds->contains($refund)) {
+            $this->refunds[] = $refund;
+            $refund->setOrder($this);
+        }
     }
 
     /*     * Utility */
@@ -262,19 +272,18 @@ class Order {
     }
 
     public function getAmountPaid() {
-        if (!isset($this->amtpaid)) {
-            foreach ($this->transactions as $trxn) {
-                $this->amtpaid += $trxn->getAmountPaid();
-            }
+        $amtpaid = 0;
+        foreach ($this->transactions as $trxn) {
+            $amtpaid += $trxn->getAmountPaid();
         }
-        return $this->amtpaid;
+
+        return $amtpaid;
     }
 
     public function getAmountDue() {
-        if (!isset($this->amtdue)) {
-            $this->amtdue = $this->getAmountPayable() - $this->getAmountPaid();
-        }
-        return ($this->amtdue < 0) ? (0) : ($this->amtdue);
+        $amtdue = 0;
+        $amtdue = $this->getAmountPayable() - $this->getAmountPaid();
+        return ($amtdue < 0) ? (0) : ($amtdue);
     }
 
     public function getAmountDueAfterTransaction($transaction) {
@@ -301,22 +310,22 @@ class Order {
     }
 
     public function getLastTransaction() {
-        if (!isset($this->lasttrxn)) {
-            foreach ($this->transactions as $trxn) {
-                if (!isset($this->lasttrxn)) {
-                    $this->lasttrxn = $trxn;
-                }
-                if ($this->lasttrxn->getTransDate() < $trxn->getTransDate()) {
-                    $this->lasttrxn = $trxn;
-                }
-                if ($this->lasttrxn->getTransDate() == $trxn->getTransDate()) {
-                    if ($this->lasttrxn->getId() < $trxn->getId()) {
-                        $this->lasttrxn = $trxn;
-                    }
+        $lasttrxn = null;
+        foreach ($this->transactions as $trxn) {
+            if (!isset($lasttrxn)) {
+                $lasttrxn = $trxn;
+            }
+            if ($lasttrxn->getTransDate() < $trxn->getTransDate()) {
+                $lasttrxn = $trxn;
+            }
+            if ($lasttrxn->getTransDate() == $trxn->getTransDate()) {
+                if ($lasttrxn->getId() < $trxn->getId()) {
+                    $lasttrxn = $trxn;
                 }
             }
         }
-        return $this->lasttrxn;
+
+        return $lasttrxn;
     }
 
 }

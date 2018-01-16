@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 {% if(transaction is defined) %}
-                    {% set orderamt = (transaction.getOrder().getQuantity() * transaction.getOrder().getUnitPrice()) %}
+                    {% set orderamt = (transaction.getOrder().getAmountPayable()) %}
                     <div class="card">
                         <div class="card-header d-flex align-content-center">
                             <h3 class="h4">{{transaction.getTid()}}</h3>
@@ -66,7 +66,7 @@
                                         <td>Entered By: </td><td class='toverflow'>{{transaction.committedBy.getFullName()}}</td>
                                     </tr>
                                     <tr>
-                                        <td>Order: </td><td class='toverflow'>{{transaction.order.getOid()}} ({{transaction.order.customer.getFullName()}})</td>
+                                        <td>Order: </td><td class='toverflow'><a href="{{path('vieworder',{'orderid':transaction.order.getId()})}}">{{transaction.order.getOid()}}</a> (<a href="{{path('viewcustomer',{'customerid':transaction.order.customer.getId()})}}">{{transaction.order.customer.getFullName()}}</a>)</td>
                                     </tr>
                                     <tr>
                                         <td>Amount Paid: </td><td>&#8358;{{transaction.amountPaid|number_format(2,'.',',')}}</a></td>

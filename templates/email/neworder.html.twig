@@ -1,0 +1,39 @@
+<div style="width:100%; background-color: #EBEBEB; padding-top:30px; padding-bottom:30px; font-family: arial; font-size: 14px;">         
+
+    <div style="padding: 10px; width:70%; margin-left: auto; margin-right: auto;background-color:#ffffff;border-radius:4px; box-shadow:  2px 2px 2px 2px #cccccc">
+
+        <div>
+            <img src="{{absolute_url(asset('img/logo.png'))}}" style="width:50px; height: 50px;"/> <span style="font-size: 25px; font-weight: bold;">IMG PETROLEUM MARKETER</span>
+            <span style="float:right; color:#cccccc"><a style="color:#999999; text-decoration: none;" href="#">Our Site</a> | <a style="color:#999999; text-decoration: none;" href="#">About Us</a> | <a style="color:#999999; text-decoration: none;" href="#">Contact Us</a></span>
+        </div>
+        <hr style="color:#cccccc; border-style: solid; width: 90%; border-width: 1px;"/>
+        <h2 style="text-align: center;">ORDER CONFIRMATION</h2>
+        <p>Hello {{order.getCustomer().getFullName()}},</p>
+
+        <p>
+            This is an e-mail notification to inform you that an order (<b>{{order.getOid()}}</b>) for {{order.getQuantity()}} {{order.getProduct().getUnitMetric()}} of {{order.getProduct().getProductName()}} was placed on your account. Below is the summary of the order. For detailed information and invoice please click <a href="#">here</a>. 
+            Thank you for doing business with us.</p>
+        <table>
+            <tr><td style="font-weight: bold;">Order ID:</td><td>{{order.getOid()}}</td></tr>
+            <tr><td style="font-weight: bold;">Order Date:</td><td>{{order.getOrderDate()|date('Y-m-d H:iA')}}</td></tr>
+            <tr><td style="font-weight: bold;">Item:</td><td>{{order.getProduct().getProductName()}}{{(order.getProduct().getProductCode())?('('~order.getProduct().getProductCode()~')')}}</td></tr>
+            <tr><td style="font-weight: bold;">Quantity:</td><td>{{order.getQuantity()~" "~order.getProduct().getUnitMetric()}}</td></tr>
+            <tr><td style="font-weight: bold;">Unit Price:</td><td>&#8358;{{order.getUnitPrice()|number_format(2,'.',',')}}</td></tr>
+            <tr><td style="font-weight: bold;">Total Price:</td><td style="font-weight: bold;">&#8358;{{order.getAmountPayable()|number_format(2,'.',',')}}</td></tr>
+        </table><br />
+        We hope to see you again soon.
+<br /><br />
+        <p>
+            Sincerely,<br/>
+            IMG Petroleum Marketers.<br />
+            {{order.getOrderDate()|date('Y-m-d H:iA')}}
+        </p>
+        <br /><br />
+        <small style="color:#666666;">
+            By placing your order, you agree to IMG Petroleum’s Privacy Notice and Conditions of Use. 
+            Unless otherwise noted, petroleum products sold by IMG Pet. are subject to sales tax in accordance with the applicable laws. 
+        </small> <br /><br />
+        <small style="color: #666666;">This email was sent from a notification-only address that cannot accept incoming email. Please do not reply to this message.</small>
+    </div>           
+
+</div>

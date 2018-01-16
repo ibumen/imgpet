@@ -203,5 +203,13 @@ class Customer {
     public function getOrders(){
         return $this->orders;
     }
+    
+        public function addOrder($order){
+        if(!$this->orders->contains($order)){
+            $this->orders[]= $order;
+            $order->setOrder($this);
+        }
+    }
+
    
 }

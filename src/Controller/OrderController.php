@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Swift_Mailer;
 use Symfony\Component\HttpFoundation\{
     Response,
     Request
@@ -33,14 +34,14 @@ class OrderController extends Controller {
         $arrdata = array("page" => "listorder");
         if (isset($customerid)) {
             $em = $this->getDoctrine()->getRepository(\App\Entity\Order::class);
-            $orders = (!isset($status) ? ($em->findByCustomer($customerid, array(), array("orderDate"=>"DESC"))) : ($em->findAllStatusOrder($status, $customerid, array("order"=>"DESC"))));
+            $orders = (!isset($status) ? ($em->findByCustomer($customerid, array(), array("orderDate" => "DESC"))) : ($em->findAllStatusOrder($status, $customerid, array("order" => "DESC"))));
             if (count($orders)) {
                 $customer = $orders[0]->getCustomer();
                 $arrdata['customer'] = $customer;
             }
         } else {
             $em = $this->getDoctrine()->getRepository(\App\Entity\Order::class);
-            $orders = $em->findBy(array(), array("orderDate"=>"DESC"));
+            $orders = $em->findBy(array(), array("orderDate" => "DESC"));
         }
         $arrdata['orders'] = $orders;
         return $this->render("order/listorder.html.twig", $arrdata);
@@ -49,7 +50,7 @@ class OrderController extends Controller {
     /**
      * @Route("/order/add/{customerid}", name="addorder", requirements={"customerid":"\d+"})
      */
-    public function addOrder(Request $request, $customerid = null) {
+    public function addOrder(Request $request, Swift_Mailer $mailer, $customerid = null) {
         $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
         // replace this line with your own code!
         $order = new Order();
@@ -89,7 +90,7 @@ class OrderController extends Controller {
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $doct->getManager();
-            
+            $customeremail = $order->getCustomer()->getEmail();
 
             //echo $order->getDateRecorded()->format("Y-m-d"); exit();
             /*             * ****************** */
@@ -119,7 +120,7 @@ class OrderController extends Controller {
                 $transaction->setTransDate($order->getOrderDate());
                 $transaction->setCommittedBy($this->getUser());
                 if (is_numeric($transaction->getAmountPaid()) && $transaction->getAmountPaid() > 0 && $transaction->getAmountPaid() <= $order->getAmountDue()) {
-                    if($transaction->getAmountPaid()==$order->getAmountDue()){
+                    if ($transaction->getAmountPaid() == $order->getAmountDue()) {
                         $order->setClosedBy($this->getUser());
                         $order->setClosingRemark("Completed on last transaction.");
                         $order->setDateClosed(new \DateTime());
@@ -128,19 +129,62 @@ class OrderController extends Controller {
                     $em->persist($order);
                     $em->persist($transaction);
                     $em->flush();
+
+                    $order->getCustomer()->addOrder($order);
+                    $order->addTransaction($transaction);
+
+                    /* Mailer                    * ****** */
+                    if (!empty($customeremail)) {
+                        $message1 = (new \Swift_Message('Order Confirmation'))
+                                ->setFrom('contactenesi@gmail.com')
+                                ->setTo($customeremail)
+                                ->setBody(
+                                $this->renderView(
+                                        // templates/emails/registration.html.twig
+                                        'email/neworder.html.twig', array('order' => $order)
+                                ), 'text/html'
+                        );
+                        $mailer->send($message1);
+                        $message2 = (new \Swift_Message('Payment Notification'))
+                                ->setFrom('contactenesi@gmail.com')
+                                ->setTo($customeremail)
+                                ->setBody(
+                                $this->renderView(
+                                        // templates/emails/registration.html.twig
+                                        'email/newtransaction.html.twig', array('trxn' => $transaction)
+                                ), 'text/html'
+                        );
+                        $mailer->send($message2);
+                    }
+
                     return $this->redirectToRoute("vieworder", array('orderid' => $order->getId()));
                 } else {
                     $form->get("Transaction")->get("amountPaid")->addError(new \Symfony\Component\Form\FormError("Amount paid must be numeric and not greater than amount payable on order."));
                 }
-            }else{
+            } else {
+                $em->persist($order);
                 $em->flush();
+                $order->getCustomer()->addOrder($order);
+                /* Mailer                    * ****** */
+                if (!empty($customeremail)) {
+                    $message = (new \Swift_Message('Order Confirmation'))
+                            ->setFrom('contactenesi@gmail.com')
+                            ->setTo($customeremail)
+                            ->setBody(
+                            $this->renderView(
+                                    // templates/emails/registration.html.twig
+                                    'email/neworder.html.twig', array('order' => $order)
+                            ), 'text/html'
+                    );
+                    $mailer->send($message);
+                }
+
                 return $this->redirectToRoute("vieworder", array('orderid' => $order->getId()));
             }
             /*             * ***************** */
 
             //$this->addFlash("registrationsuccess", "Order was placed successfully!");
             //$form = $this->createForm(OrderType::class, new Order());
-            
         }
         return $this->render("order/neworder.html.twig", array("form" => $form->createView(), "page" => "addorder"));
     }
@@ -161,6 +205,7 @@ class OrderController extends Controller {
 
             $repo = $emi->getRepository(Order::class);
             $result = $repo->deleteOrder($orderid);
+            
             if ($result) {
                 $this->addFlash("orderdeletion", "Order '$oid' was deleted successfull!");
             } else {

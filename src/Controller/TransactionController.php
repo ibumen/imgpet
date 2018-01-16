@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Swift_Mailer;
 use Symfony\Component\HttpFoundation\{
     Response,
     Request
@@ -50,7 +51,7 @@ class TransactionController extends Controller {
     /**
      * @Route("/transaction/add/{orderid}", name="addtransaction", requirements={"orderid":"\d+"})
      */
-    public function addTransaction(Request $request, $orderid = null) {
+    public function addTransaction(Request $request, Swift_Mailer $mailer, $orderid = null) {
         $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
         // replace this line with your own code!
         $transaction = new Transaction();
@@ -86,7 +87,7 @@ class TransactionController extends Controller {
         $cuid = ($request->get('cuid') == "") ? null : $request->get('cuid');
 
 
-        $form = $this->createForm(TransactionType::class, $transaction, array("customerid" => $cuid, "onorder"=>false));
+        $form = $this->createForm(TransactionType::class, $transaction, array("customerid" => $cuid, "onorder" => false));
         //echo $tid; exit();
         $form->handleRequest($request);
 
@@ -118,9 +119,25 @@ class TransactionController extends Controller {
                 $transaction->getOrder()->setClosingRemark('Completed on last transaction.');
             }
             $em->flush();
+            $transaction->getOrder()->addTransaction($transaction);
+            /* Mailer ************************ */
+            $customeremail = $transaction->getOrder()->getCustomer()->getEmail();
+            if (!empty($customeremail)) {
+                $message = (new \Swift_Message('Payment Notification'))
+                        ->setFrom('contactenesi@gmail.com')
+                        ->setTo($customeremail)
+                        ->setBody(
+                        $this->renderView(
+                                // templates/emails/registration.html.twig
+                                'email/newtransaction.html.twig', array('trxn' => $transaction)
+                        ), 'text/html'
+                );
+                $mailer->send($message);
+            }
+
             //$this->addFlash("registrationsuccess", "Transaction was made successfully!");
-           //$form = $this->createForm(TransactionType::class, new Transaction());
-            return $this->redirectToRoute("viewtransaction", array('transid'=>$transaction->getId()));
+            //$form = $this->createForm(TransactionType::class, new Transaction());
+            return $this->redirectToRoute("viewtransaction", array('transid' => $transaction->getId()));
         }
 
         return $this->render("transaction/newtransaction.html.twig", array("form" => $form->createView(), "page" => "addtransaction"));
