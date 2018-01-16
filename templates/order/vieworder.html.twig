@@ -126,7 +126,7 @@
                                     <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
                                         <div style="min-height: 100%;" class="content">
                                             <ul class="list-unstyled orderpagelink">
-                                                <li><a href="{{(order.orderstatus!='active')?"javascript:void(0);":path('addtransaction',{'orderid':order.id})}}"><span class="icon-check"> </span> Add Transaction</a></li>
+                                                <li><a href="{{(order.orderstatus!='active')?"javascript:void(0);":path('addtransaction',{'orderid':order.id})}}"><span class="icon-check"> </span> Make Payment</a></li>
                                                 <li><a href="{{path('viewtransaction',{'id':order.id, 'transid':'last-order'})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Trxn</a></li>
                                                 <li><a href="{{path('listtransaction',{'orderid':order.id})}}"><span class="icon ion-ios-eye-outline"> </span> View All Trxn</a></li>
                                             </ul>
