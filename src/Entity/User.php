@@ -224,16 +224,25 @@ class User implements UserInterface, \Serializable {
             switch ($role) {
                 case 'ROLE_ADMIN':
                     $r[] = 'ROLE_ADMIN';
-                case 'ROLE_SALES_MANAGER':
-                    $r[] = 'ROLE_SALES_MANAGER';
-                case 'ROLE_SALES_PERSONNEL':
-                    $r[] = 'ROLE_SALES_PERSONNEL';
+                case 'ROLE_MANAGER_SALES':
+                    $r[] = 'ROLE_MANAGER_SALES';
+                case 'ROLE_PERSONNEL_SALES':
+                    $r[] = 'ROLE_PERSONNEL_SALES';
             }
             switch ($role) {
                 case 'ROLE_ADMIN':
                     $r[] = 'ROLE_ADMIN';
-                case 'ROLE_ASSET_MANAGER';
-                    $r[] = 'ROLE_ASSET_MANAGER';
+                case 'ROLE_MANAGER_FACILITY';
+                    $r[] = 'ROLE_MANAGER_FACILITY';
+            }
+            
+            switch ($role) {
+                case 'ROLE_ADMIN':
+                    $r[] = 'ROLE_ADMIN';
+                case 'ROLE_MANAGER_LOADING';
+                    $r[] = 'ROLE_MANAGER_LOADING';
+                case 'ROLE_PERSONNEL_LOADING';
+                    $r[] = 'ROLE_PERSONNEL_LOADING';
             }
         }
         return array_unique($r);

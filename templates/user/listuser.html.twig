@@ -16,7 +16,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for user in users %}
+                                {% for user in users if user.username != 'admin' %}
                                     <tr>
                                         <td>{{loop.index}}</td>
                                         <td>{{user.title}}</td>
@@ -25,7 +25,7 @@
                                         <td>{{user.dateCreated|date('d/m/Y')}}</td>
                                         <td>{{user.lastLogin|date('d/m/Y H:i:s')}}</td>
                                         <td>{{user.status|capitalize}}</td>
-                                        <td><button data-id='{{user.id}}' class="btn btn-primary btn-sm">{{user.status=="disabled"?"Enable":"Disable"}}</button> <button data-id="{{user.id}}" class="btn btn-primary btn-sm pwd-reset">Reset Password</button></td>
+                                        <td><button data-id='{{user.id}}' class="statusbtn btn btn-primary btn-sm">{{user.status=="disabled"?"Enable":"Disable"}}</button> <button data-id="{{user.id}}" class="resetbtn btn btn-primary btn-sm">Reset Password</button> <button data-id="{{user.id}}" class="delbtn btn btn-danger btn-sm">Delete</button></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -37,3 +37,96 @@
     </div>
 
 {% endblock content %}
+{% block js %}  
+    <script type='text/javascript'>
+        var loadinghtml = "<span class='icon ion-android-sync del-loading'></span>";
+        $(document).on("click", ".statusbtn", function (event) {
+            var dis = $(this);
+            var txt = dis.text();
+            dis.html(loadinghtml);
+            dis.addClass("disabled");
+            $.ajax({
+                url: '{{path('change_user_status', {'userid':'0'})}}' + dis.attr('data-id'),
+                method: 'POST'
+            }).done(function (data) {
+                dis.removeClass("disabled");
+                //alert("here");
+                if (data == "error_0") {//Loading data not found
+                    alert("ACCESS DENIED!");
+                    dis.text(txt);
+                } else
+                if (data == "error_1") {//Loading data not found
+                    alert("User not found.");
+                    dis.text(txt);
+                } else if (data == "error_3") {// Server error
+                    alert("Server error.");
+                    dis.text(txt);
+                } else {
+                    if (txt == "Enable") {
+                        dis.text("Disable");
+                    } else {
+                        dis.text("Enable");
+                    }
+                }
+            });
+        });
+
+        $(document).on("click", ".resetbtn", function (event) {
+            var dis = $(this);
+            var txt = dis.text();
+            dis.html(loadinghtml);
+            dis.addClass("disabled");
+            $.ajax({
+                url: '{{path('reset_user_password', {'userid':'0'})}}' + dis.attr('data-id'),
+                method: 'POST'
+            }).done(function (data) {
+                dis.removeClass("disabled");
+                //alert("here");
+                if (data == "error_0") {//Loading data not found
+                    alert("ACCESS DENIED!");
+
+                } else
+                if (data == "error_1") {//Loading data not found
+                    alert("User not found.");
+
+                } else if (data == "error_3") {// Server error
+                    alert("Server error.");
+
+                } else {
+                    alert("Password Reset Successful!");
+                }
+                dis.text(txt);
+            });
+        });
+
+        $(document).on("click", ".delbtn", function (event) {
+            var dis = $(this);
+            var txt = dis.text();
+            dis.html(loadinghtml);
+            dis.addClass("disabled");
+            $.ajax({
+                url: '{{path('del_user', {'userid':'0'})}}' + dis.attr('data-id'),
+                method: 'POST'
+            }).done(function (data) {
+                dis.removeClass("disabled");
+                //alert("here");
+                if (data == "error_0") {//Loading data not found
+                    alert("ACCESS DENIED!");
+                    dis.text(txt);
+                } else
+                if (data == "error_1") {//Loading data not found
+                    alert("User not found.");
+                    dis.text(txt);
+                } else if (data == "error_3") {// Server error
+                    alert("Server error.");
+                    dis.text(txt);
+                } else if (data == "error_4") {// Server error
+                    alert("Some record is associated with this user.");
+                    dis.text(txt);
+                } else {
+                    document.location = '{{path('listuser')}}';
+                }
+            });
+        });
+    </script>
+{% endblock js %} 

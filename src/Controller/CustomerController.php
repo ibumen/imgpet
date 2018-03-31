@@ -24,7 +24,7 @@ class CustomerController extends Controller {
      * @Route("/customer/list", name="listcustomer")
      */
     public function listCustomer() {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         $em = $this->getDoctrine()->getRepository(\App\Entity\Customer::class);
         $customers = $em->findAll();
         return $this->render("customer/listcustomer.html.twig", array("page" => "listcustomer", "customers" => $customers));
@@ -34,7 +34,7 @@ class CustomerController extends Controller {
      * @Route("/customer/add", name="addcustomer")
      */
     public function addCustomer(Request $request) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         // replace this line with your own code!
         $customer = new Customer();
         $form = $this->createForm(CustomerType::class, $customer);
@@ -75,7 +75,7 @@ class CustomerController extends Controller {
      * @Route("/customer/edit/{customerid}", name="editcustomer", requirements={"customerid":"\d+"})
      */
     public function editCustomer(EntityManagerInterface $emi, Request $request, $customerid) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         $customer = $emi->getRepository(Customer::class)->find($customerid);
         if (!$customer && null === $customer) {
             throw new \InvalidArgumentException("Customer does not exist!");
@@ -104,7 +104,7 @@ class CustomerController extends Controller {
      */
     public function viewCustomer(Request $request, $customerid) {
         // replace this line with your own code!
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         $arrdata = array("page" => "viewcustomer");
 
         $em = $this->getDoctrine();
@@ -150,7 +150,7 @@ class CustomerController extends Controller {
      */
     public function vCustomer(Request $request) {
         // replace this line with your own code!
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         $form = $this->createFormBuilder(new \App\Utility\CustomerFind())
                 ->setAction($this->generateUrl('vcustomer'))
                 ->add('cid', TextType::class, array("label" => "Customer Unique ID:", "attr" => array("placeholder" => "Customer Unique ID")))

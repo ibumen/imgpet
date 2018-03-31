@@ -23,6 +23,8 @@ class Order {
         $this->orderDate = $dt;
         $this->dateRecorded = $dt;
         $this->orderStatus = "active";
+        $this->quantityDelivered=0;
+        $this->orderDeliveryStatus="not-delivered";
     }
 
     /**
@@ -72,6 +74,14 @@ class Order {
      * @ORM\Column(type="integer", nullable=false, options={"unsigned":true})
      */
     private $quantity;
+    
+    /**
+     *
+     * @Assert\Type(type="numeric", message="Quantity Delivered must be a numeric value.")
+     * @Assert\LessThanOrEqual(propertyPath="quantity", message="Quantity delivered must be less than or equal to quantity ordered.")
+     * @ORM\Column(type="integer", nullable=false, options={"unsigned":true, "default":0})
+     */
+    private $quantityDelivered;
 
     /**
      *
@@ -113,6 +123,18 @@ class Order {
      * @ORM\Column(type="string", nullable=false, length=20, options={"default":"active"})
      */
     private $orderStatus;
+
+    /**
+     * @Assert\Choice(callback= "getUtilOrderDeliveryStatus", message="Invalid Order Delivery Status")
+     * @ORM\Column(type="string", nullable=false, length=20, options={"default":"not-delivered"})
+     */
+    private $orderDeliveryStatus;
+
+    /**
+     * 
+     * @ORM\Column(type="string", nullable=true, length=500)
+     */
+    private $deliveryLocation;
 
     /**
      *
@@ -202,6 +224,17 @@ class Order {
             throw new \InvalidArgumentException("Invalid Order Status");
         }
         $this->orderStatus = $ostatus;
+    }
+    
+    public function getOrderDeliveryStatus() {
+        return $this->orderDeliveryStatus;
+    }
+    
+    public function setOrderDeliveryStatus($ostatus) {
+        if (!in_array($ostatus, Order::getUtilOrderDeliveryStatus())) {
+            throw new \InvalidArgumentException("Invalid Order Delivery Status");
+        }
+        $this->orderDeliveryStatus = $ostatus;
     }
 
     public function getDateClosed() {
@@ -326,6 +359,28 @@ class Order {
         }
 
         return $lasttrxn;
+    }
+    
+    public function getQuantityDelivered(){
+        return $this->quantityDelivered;
+    }
+    public function setQuantityDelivered($quantity){
+        $this->quantityDelivered = $quantity;
+        if($quantity == 0){
+            $this->setOrderDeliveryStatus("not-delivered");                    
+        }else if($quantity < $this->quantity){
+            $this->setOrderDeliveryStatus("partial-delivery"); 
+        }else{
+            $this->setOrderDeliveryStatus("delivered"); 
+        }
+    }
+    
+    public function getDeliveryLocation(){
+        return $this->deliveryLocation;
+    }
+    
+    public function setDeliveryLocation($loc){
+        $this->deliveryLocation = $loc;
     }
 
 }

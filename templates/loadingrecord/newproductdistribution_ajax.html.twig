@@ -1,0 +1,10 @@
+{% if (loadingrecord.getDistributedQuantity() == loadingrecord.getDeliveredQuantity()) %}
+    <div class="alert alert-info">No quantity left for distribution.</div>
+{% else %}
+    <div class="row" id="pddiv" style="text-align: left;">
+        <div class="col-lg-6">
+            <h2>Add Product Distribution</h2>
+            {{form(form, {'attr': {'novalidate': 'novalidate'}})}}
+        </div>
+    </div>        
+{% endif %}

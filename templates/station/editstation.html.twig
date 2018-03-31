@@ -1,6 +1,7 @@
 {# empty Twig template #}
 {% extends "base.html.twig" %}
 
+
 {% block content %}
     <div class="row">
         <div class="col-lg-2">
@@ -8,12 +9,13 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header d-flex align-content-center">
-                    <h3 class="h4">Register New Truck Owner</h3>
+                    <h3 class="h4">Modify Existing Loading Depot </h3>
                 </div>
                 <div class="card-body">
-                    {% for flash_message in app.flashes('registrationsuccess') %}
+                    {% for flash_message in app.flashes('modificationsuccess') %}
                         <div class="alert alert-success" role="alert">
-                            {{ flash_message }}
+                            {{ flash_message }} <br />
+                            [<a href="{{path('liststation')}}">All Loadings Depot</a>]
                         </div>
                     {% endfor %}
                     {{form(form, {'attr': {'novalidate': 'novalidate'}})}}

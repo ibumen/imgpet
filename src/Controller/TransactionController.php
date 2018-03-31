@@ -29,7 +29,7 @@ class TransactionController extends Controller {
      * @Route("/transaction/list/{orderid}", name="listtransaction", requirements={"orderid":"\d+"})
      */
     public function listTransaction($orderid = null) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         $arrdata = array("page" => "listtransaction");
         $em = $this->getDoctrine()->getRepository(\App\Entity\Transaction::class);
         if (isset($orderid)) {
@@ -52,7 +52,7 @@ class TransactionController extends Controller {
      * @Route("/transaction/add/{orderid}", name="addtransaction", requirements={"orderid":"\d+"})
      */
     public function addTransaction(Request $request, Swift_Mailer $mailer, $orderid = null) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         // replace this line with your own code!
         $transaction = new Transaction();
 
@@ -124,7 +124,7 @@ class TransactionController extends Controller {
             $customeremail = $transaction->getOrder()->getCustomer()->getEmail();
             if (!empty($customeremail)) {
                 $message = (new \Swift_Message('Payment Notification'))
-                        ->setFrom('contactenesi@gmail.com')
+                        ->setFrom('auto_confirm@imgpet.com')
                         ->setTo($customeremail)
                         ->setBody(
                         $this->renderView(
@@ -147,7 +147,7 @@ class TransactionController extends Controller {
      * @Route("/transaction/make/{customerid}", name="maketransaction", requirements={"customerid":"\d+"})
      */
     public function makeTransaction(Request $request, $customerid = null) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         return $this->forward("App\Controller\TransactionController::addTransaction", array('cuid' => $customerid));
         // replace this line with your own code!
     }
@@ -156,7 +156,7 @@ class TransactionController extends Controller {
      * @Route("/transaction/view/{transid}/{id}", name="viewtransaction", requirements={"transid":"\d+|last-customer|last-order", "id":"\d+"})
      */
     public function viewTransaction(Request $request, $transid, $id = null) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         // replace this line with your own code!
         $arrdata = array("page" => "viewtransaction");
 
@@ -203,7 +203,7 @@ class TransactionController extends Controller {
      * @Route("/transaction/view", name="vtransaction")
      */
     public function vTransaction(Request $request) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         // replace this line with your own code!
         $form = $this->createFormBuilder(new \App\Utility\TransactionFind())
                 ->setAction($this->generateUrl('vtransaction'))

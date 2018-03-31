@@ -1,10 +1,14 @@
 {# global variable declarations #}
-{% set TruckPages = ["listtruckowner", "addtruckowner", "edittruckowner","listtruck", "addtruck", "edittruck"] %}
+{% set ExpensePages = ["listexpense", "addexpense", "editexpense"] %}
+{% set TruckPages = ["listtruckowner", "addtruckowner", "edittruckowner","listtruck", "addtruck", "edittruck","listtruckexpense", "addtruckexpense", "edittruckexpense"] %}
 {% set UserPages = ["listuser", "adduser"] %}
 {% set ProductPages = ["listproduct", "addproduct", "editproduct"] %}
 {% set CustomerPages = ["listcustomer", "addcustomer", "editcustomer", "viewcustomer"] %}
 {% set OrderPages = ["listorder", "vieworder", "listtransaction", "viewtransaction", "addorder", "addtransaction", "editorder", "edittransaction"] %}
+{% set LoadingRecPages = ["listloading","addloading", "modifyloading", "viewloading","listloadingrec","addloadingrec", "modifyloadingrec", "viewloadingrec"] %}
 {% set ReportPages = ["salesreport"] %}
+{% set StationPages = ["liststation", "addstation"] %}
+{% set FuelStationPages = ["listfuelstation", "addfuelstation", "editfuelstation"] %}
 {% if page is not defined %}
     {% if (app.request.getPathInfo()|slice(0, 8)) == '/_error/' %}
         {% set page = "errorpage" %}
@@ -39,6 +43,25 @@
         {% block links %} 
         {% endblock links %}  
         <style>
+            .form-msg{
+                font-weight:lighter;
+            }
+            .ion-android-sync {
+                font-size: 20px;
+                -animation: spin .7s infinite linear;
+                -webkit-animation: spin2 .7s infinite linear;
+            }
+
+            @-webkit-keyframes spin2 {
+                from { -webkit-transform: rotate(0deg);}
+                to { -webkit-transform: rotate(360deg);}
+            }
+
+            @keyframes spin {
+                from { transform: scale(1) rotate(0deg);}
+                to { transform: scale(1) rotate(360deg);}
+            }
+            
             {% block stylesheet %} 
             {% endblock stylesheet %}  
         </style>
@@ -82,39 +105,12 @@
                                 <div class="avatar"><img src="{{asset('img/user.png')}}" alt="..." class="img-fluid rounded-circle"></div>
                                 <div class="title">
                                     <h1 class="h4">{{app.user.getFullName()}}</h1>
-                                    
+
                                 </div>
                             </div>
                             <!-- Sidebar Navidation Menus--><span class="heading">Main</span>
                             <ul class="list-unstyled">
                                 <li {{ page=="home"?"class='active'":""}}><a href="{{path('home')}}"> <i class="icon-home"></i>Home </a></li>
-                                <li><a {{ (page in UserPages)?"":"collapse"}} href="#useractionDropdown" aria-expanded="{{ (page in UserPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-people-outline"></i>Users </a>
-                                    <ul id="useractionDropdown" class="collapse list-unstyled {{ (page in UserPages)?"show":""}}">
-                                        <li {{ page=="listuser"?"class='active'":""}}><a href="{{path('listuser')}}"><i class="icon ion-ios-list-outline"> </i> List Users</a></li>
-                                        <li {{ page=="adduser"?"class='active'":""}}><a href="{{path('adduser')}}"><i class="icon ion-ios-personadd-outline"> </i> Add New User</a></li>
-                                    </ul>
-                                </li>
-                                <li><a {{ (page in TruckPages)?"":"collapse"}} href="#truckowneractionDropdown" aria-expanded="{{ (page in TruckPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-android-bus"></i>Truck</a>
-                                    <ul id="truckowneractionDropdown" class="collapse list-unstyled {{ (page in TruckPages)?"show":""}}">
-                                        <li {{ page=="listtruckowner"?"class='active'":""}}><a href="{{path('listtruckowner')}}"><i class="icon ion-ios-list-outline"> </i> List Truck Owners</a></li>
-                                        <li {{ page=="addtruckowner"?"class='active'":""}}><a href="{{path('addtruckowner')}}"><i class="icon ion-ios-personadd-outline"> </i> Add New Truck Owner</a></li>
-                                        <li {{ page=="listtruck"?"class='active'":""}}><a href="{{path('listtruck')}}"><i class="icon ion-ios-list-outline"> </i> List Truck</a></li>
-                                        <li {{ page=="addtruck"?"class='active'":""}}><a href="{{path('addtruck')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Truck</a></li>
-                                    </ul>
-                                </li>
-                                <li><a {{ (page in ProductPages)?"":"collapse"}} href="#prodactionDropdown" aria-expanded="{{ (page in ProductPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-box-outline"></i>Product </a>
-                                    <ul id="prodactionDropdown" class="collapse list-unstyled {{ (page in ProductPages)?"show":""}}">
-                                        <li {{ page=="listproduct"?"class='active'":""}}><a href="{{path('listproduct')}}"><i class="icon ion-ios-list-outline"> </i> List Products</a></li>
-                                        <li {{ page=="addproduct"?"class='active'":""}}><a href="{{path('addproduct')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Product</a></li>
-                                    </ul>
-                                </li>
-                                <li><a {{ (page in CustomerPages)?"":"collapse"}} href="#custactionDropdown" aria-expanded="{{ (page in CustomerPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-person"></i>Customer </a>
-                                    <ul id="custactionDropdown" class="collapse list-unstyled {{ (page in CustomerPages)?"show":""}}">
-                                        <li {{ page=="listcustomer"?"class='active'":""}}><a href="{{path('listcustomer')}}"><i class="icon ion-ios-list-outline"> </i> List Customers</a></li>
-                                        <li {{ page=="addcustomer"?"class='active'":""}}><a href="{{path('addcustomer')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Customer</a></li>
-                                        <li {{ page=="viewcustomer"?"class='active'":""}}><a href="{{path('vcustomer')}}"><i class="icon ion-ios-eye-outline"> </i> View Customer</a></li>
-                                    </ul>
-                                </li>
                                 <li><a {{ (page in OrderPages)?"":"collapse"}} href="#orderactionDropdown" aria-expanded="{{ (page in OrderPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon-bill"></i>Order </a>
                                     <ul id="orderactionDropdown" class="collapse list-unstyled {{ (page in OrderPages)?"show":""}}">
                                         <li {{ page=="listorder"?"class='active'":""}}><a href="{{path('listorder')}}"><i class="icon ion-ios-list-outline"> </i> List Orders</a></li>
@@ -125,9 +121,61 @@
                                         <li {{ page=="viewtransaction"?"class='active'":""}}><a href="{{path('vtransaction')}}"><i class="icon ion-ios-eye-outline"> </i> View Transaction</a></li>
                                     </ul>
                                 </li>
+                                <li><a {{ (page in LoadingRecPages)?"":"collapse"}} href="#loadingrecactionDropdown" aria-expanded="{{ (page in LoadingRecPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-android-bus"></i>Loading</a>
+                                    <ul id="loadingrecactionDropdown" class="collapse list-unstyled {{ (page in LoadingRecPages)?"show":""}}">
+                                        <li {{ page=="listloading"?"class='active'":""}}><a href="{{path('listloading')}}"><i class="icon ion-ios-list-outline"> </i> List Loading</a></li>
+                                        <li {{ page=="addloading"?"class='active'":""}}><a href="{{path('addloading')}}"><i class="icon ion-ios-personadd-outline"> </i> Add Loading</a></li>
+                                        <li {{ page=="viewloading"?"class='active'":""}}><a href="{{path('vloading')}}"><i class="icon ion-ios-plus-outline"> </i> View Loading</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in CustomerPages)?"":"collapse"}} href="#custactionDropdown" aria-expanded="{{ (page in CustomerPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-person"></i>Customer </a>
+                                    <ul id="custactionDropdown" class="collapse list-unstyled {{ (page in CustomerPages)?"show":""}}">
+                                        <li {{ page=="listcustomer"?"class='active'":""}}><a href="{{path('listcustomer')}}"><i class="icon ion-ios-list-outline"> </i> List Customers</a></li>
+                                        <li {{ page=="addcustomer"?"class='active'":""}}><a href="{{path('addcustomer')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Customer</a></li>
+                                        <li {{ page=="viewcustomer"?"class='active'":""}}><a href="{{path('vcustomer')}}"><i class="icon ion-ios-eye-outline"> </i> View Customer</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in ExpensePages)?"":"collapse"}} href="#expenseactionDropdown" aria-expanded="{{ (page in ExpensePages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-android-bus"></i>Misc. Expenses</a>
+                                    <ul id="expenseactionDropdown" class="collapse list-unstyled {{ (page in ExpensePages)?"show":""}}">
+                                        <li {{ page=="listexpense"?"class='active'":""}}><a href="{{path('listexpense')}}"><i class="icon ion-ios-list-outline"> </i> List Expense</a></li>
+                                        <li {{ page=="addexpense"?"class='active'":""}}><a href="{{path('addexpense')}}"><i class="icon ion-ios-plus-outline"> </i> Add Expense</a></li>
+                                    </ul>
+                                </li>
                                 <li><a {{ (page in ReportPages)?"":"collapse"}} href="#reportactionDropdown" aria-expanded="{{ (page in ReportPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon-page"></i>Report </a>
                                     <ul id="reportactionDropdown" class="collapse list-unstyled {{ (page in ReportPages)?"show":""}}">
                                         <li {{ page=="salesreport"?"class='active'":""}}><a href="#"><i class="icon-page"> </i> Sales Report</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in TruckPages)?"":"collapse"}} href="#truckowneractionDropdown" aria-expanded="{{ (page in TruckPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-android-bus"></i>Truck</a>
+                                    <ul id="truckowneractionDropdown" class="collapse list-unstyled {{ (page in TruckPages)?"show":""}}">
+                                        <li {{ page=="listtruck"?"class='active'":""}}><a href="{{path('listtruck')}}"><i class="icon ion-ios-list-outline"> </i> List Truck</a></li>
+                                        <li {{ page=="addtruck"?"class='active'":""}}><a href="{{path('addtruck')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Truck</a></li>
+                                        <li {{ page=="listtruckexpense"?"class='active'":""}}><a href="{{path('listtruckexpense')}}"><i class="icon ion-ios-list-outline"> </i> List Truck Expense</a></li>
+                                        <li {{ page=="addtruckexpense"?"class='active'":""}}><a href="{{path('addtruckexpense')}}"><i class="icon ion-ios-plus-outline"> </i> Add Truck Expense</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in StationPages)?"":"collapse"}} href="#stationactionDropdown" aria-expanded="{{ (page in StationPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-android-bus"></i> Loading Depot</a>
+                                    <ul id="stationactionDropdown" class="collapse list-unstyled {{ (page in StationPages)?"show":""}}">
+                                        <li {{ page=="liststation"?"class='active'":""}}><a href="{{path('liststation')}}"><i class="icon ion-ios-list-outline"> </i> List  Loading Depot</a></li>
+                                        <li {{ page=="addstation"?"class='active'":""}}><a href="{{path('addstation')}}"><i class="icon ion-ios-personadd-outline"> </i> Add  Loading Depot</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in FuelStationPages)?"":"collapse"}} href="#fuelstationactionDropdown" aria-expanded="{{ (page in FuelStationPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-android-bus"></i>Fuel Stations</a>
+                                    <ul id="fuelstationactionDropdown" class="collapse list-unstyled {{ (page in FuelStationPages)?"show":""}}">
+                                        <li {{ page=="listfuelstation"?"class='active'":""}}><a href="{{path('listfuelstation')}}"><i class="icon ion-ios-list-outline"> </i> List Fuel Station</a></li>
+                                        <li {{ page=="addfuelstation"?"class='active'":""}}><a href="{{path('addfuelstation')}}"><i class="icon ion-ios-personadd-outline"> </i> Add Fuel Station</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in ProductPages)?"":"collapse"}} href="#prodactionDropdown" aria-expanded="{{ (page in ProductPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-box-outline"></i>Product </a>
+                                    <ul id="prodactionDropdown" class="collapse list-unstyled {{ (page in ProductPages)?"show":""}}">
+                                        <li {{ page=="listproduct"?"class='active'":""}}><a href="{{path('listproduct')}}"><i class="icon ion-ios-list-outline"> </i> List Products</a></li>
+                                        <li {{ page=="addproduct"?"class='active'":""}}><a href="{{path('addproduct')}}"><i class="icon ion-ios-plus-outline"> </i> Add New Product</a></li>
+                                    </ul>
+                                </li>
+                                <li><a {{ (page in UserPages)?"":"collapse"}} href="#useractionDropdown" aria-expanded="{{ (page in UserPages)?"true":"false"}}" data-toggle="collapse"> <i class="icon ion-ios-people-outline"></i>Users </a>
+                                    <ul id="useractionDropdown" class="collapse list-unstyled {{ (page in UserPages)?"show":""}}">
+                                        <li {{ page=="listuser"?"class='active'":""}}><a href="{{path('listuser')}}"><i class="icon ion-ios-list-outline"> </i> List Users</a></li>
+                                        <li {{ page=="adduser"?"class='active'":""}}><a href="{{path('adduser')}}"><i class="icon ion-ios-personadd-outline"> </i> Add New User</a></li>
                                     </ul>
                                 </li>
                             {% endblock sidenavbar %}  
@@ -148,6 +196,12 @@
                                         Manage Products
                                     {% elseif (page in OrderPages) %}
                                         Manage Orders, Transactions and Refunds
+                                    {% elseif (page in LoadingRecPages) %}
+                                        Manage Loadings from Depot
+                                    {% elseif (page in StationPages) %}
+                                        Manage Loading Depot
+                                    {% elseif (page in FuelStationPages) %}
+                                        Manage Fuel Stations 
                                     {% endif %}                                                        
                                 </h2>
                             </div>
@@ -184,6 +238,7 @@
                 <!--<script src="{{asset('vendor/jquery-validation/jquery.validate.min.js')}}"></script>-->
                 <!-- Main File-->
                 <script src="{{asset('js/front.js')}}"></script>
+                <script src="{{asset('js/sitescript.js')}}"></script>
             {% endblock corescripts %}  
             {% block scripts %} 
             {% endblock scripts %} 

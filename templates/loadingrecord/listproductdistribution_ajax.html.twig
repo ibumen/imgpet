@@ -1,0 +1,22 @@
+{% if (loading.getProductDistributions()|length >0) %}
+    <table class="table table-striped table-sm table-bordered">
+        <tr><th>S/N</th><th>Date</th><th>Location</th><th>Quantity</th><th>Actions</th></tr>
+                {% for dist in loading.getProductDistributions() %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{dist.deliveryDate|date('D jS F, Y')}}</td>
+                <td>{{dist.location}}</td>
+                <td>{{dist.quantityDelivered|number_format(0,'.',',')}} {{loading.loading.product.getUnitMetric()|capitalize}}</td>
+                <td>
+                    <a href="#" class="btn no-padding-top no-padding-bottom"><i class="icon ion-eye"></i></a> 
+                    <a href="{{path('del_product_distribution',{'distid':dist.id})}}" data-id='{{dist.id}}' style="color: red;" class = "deldist btn no-padding-top no-padding-bottom"> <i class="icon ion-trash-b"> </i></a>                    
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+
+    <div class="alert alert-info" style="font-weight: lighter;">No distribution record</div>
+
+{% endif %}
+

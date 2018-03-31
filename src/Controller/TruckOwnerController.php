@@ -16,6 +16,7 @@ class TruckOwnerController extends Controller
      */
     public function listTruckOwner()
     {
+        return;
         $this->denyAccessUnlessGranted('ROLE_ASSET_MANAGER');
         $em= $this->getDoctrine()->getRepository(\App\Entity\TruckOwner::class);
         $truckowners = $em->findAll();
@@ -27,6 +28,7 @@ class TruckOwnerController extends Controller
      */
     public function addTruckowner(Request $request)
     {
+        return;
         $this->denyAccessUnlessGranted('ROLE_ASSET_MANAGER');
         // replace this line with your own code!
         $truckowner = new TruckOwner();

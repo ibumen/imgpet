@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\TruckOwnerRepository")
+ * xxx@ORM\Entity(repositoryClass="App\Repository\TruckOwnerRepository")
  */
 class TruckOwner {
 
@@ -48,11 +48,6 @@ class TruckOwner {
      */
     private $oname;
 
-    /**
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\Truck", mappedBy="truckOwner")
-     */
-    private $trucks;
 
     /**
      *
@@ -101,12 +96,6 @@ class TruckOwner {
         $this->title = $title;
     }
 
-    /**
-     * @return Collection|Truck[]
-     */
-    public function getTrucks() {
-        return $this->trucks;
-    }
 
 
 }

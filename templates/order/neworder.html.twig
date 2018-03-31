@@ -7,7 +7,7 @@
 {% endblock corelinks %}
 {% block stylesheet %}
     #order_Transaction{
-        display:none;
+    display:none;
     }
 {% endblock stylesheet %}
 
@@ -43,59 +43,77 @@
 {% block js %}
     <script type='text/javascript'>
         /****************/
-        if($("#order_maketrans_0").prop("checked")){
+        if ($("#order_maketrans_0").prop("checked")) {
             $("#order_Transaction").show('slideDown');
-        }else{
+        } else {
             $("#order_Transaction").hide('slideUp');
         }
+        $("#order_locationname").parent().hide();
         /****************/
-        
-        
-        $(document).on("click", "#order_maketrans_0", function(event){
-            if($(this).prop("checked")==true){
+
+        //events
+        $(document).on("click", "#order_maketrans_0", function (event) {
+            if ($(this).prop("checked") == true) {
                 $("#order_Transaction").show('slideDown');
-            }else{
+            } else {
                 $("#order_Transaction").hide('slideUp');
             }
         });
-        
+
         $(document).on("change", "#order_product", function (event) {
             $("#order_unitPrice").val($("#order_product option:selected").attr("data-price"));
         });
-        
+
+        $(document).on("click", "#order_fromstation_0", function (event) {
+            if ($(this).prop("checked")) {
+                $("#order_locationname").parent().show();
+                $("#order_deliveryLocation").val("").parent().hide();
+            } else {
+                $("#order_locationname").val("").parent().hide();
+                $("#order_deliveryLocation").parent().show();
+            }
+        });
+
+        $(document).on("change", "#order_locationname", function (event) {
+            $("#order_deliveryLocation").val($("#order_locationname option:selected").attr("data-station"));
+
+
+        });
+
+
         /*$(".date").datepicker({
-            dateFormat: "yy-mm-dd",
-            changeMonth: true,
-            changeYear:true,
-            currentText:'Now',
-            maxDate:'+0d',
-            /*minDate:'-20d',
-             * yearRange: "c-10:c+10"*/
-            /*numberOfMonths :1,
-            selectOtherMonths: false,
-            showOtherMonths: true,
-            showAnim:'fadeIn',
-            duration:'slow',
-            showButtonPanel:true
-            
-        });*/
-    var dt = new Date().setDate(new Date().getDate()-20);
-    $(".date").datetimepicker({
-        format: 'Y-m-d H:i:s',
-	formatTime: 'H:i',
-	formatDate: 'Y-m-d',
-        step:10,
-	monthChangeSpinner:true,
-	closeOnDateSelect:true,
-	closeOnWithoutClick:true,
-	closeOnInputClick: true,
-	timepicker:true,
-	datepicker:true,
-	defaultTime:false,// use formatTime format (ex. '10:00' for formatTime: 'H:i')
-	defaultDate:false, // use formatDate format (ex new Date() or '1986/12/08' or '-1970/01/05' or '-1970/01/05')
-	maxDate: new Date(),
-	yearStart:new Date().getFullYear()-1,
-        yearEnd:new Date().getFullYear()
-    });
+         dateFormat: "yy-mm-dd",
+         changeMonth: true,
+         changeYear:true,
+         currentText:'Now',
+         maxDate:'+0d',
+         /*minDate:'-20d',
+         * yearRange: "c-10:c+10"*/
+        /*numberOfMonths :1,
+         selectOtherMonths: false,
+         showOtherMonths: true,
+         showAnim:'fadeIn',
+         duration:'slow',
+         showButtonPanel:true
+         
+         });*/
+        var dt = new Date().setDate(new Date().getDate() - 20);
+        $(".date").datetimepicker({
+            format: 'Y-m-d H:i:s',
+            formatTime: 'H:i',
+            formatDate: 'Y-m-d',
+            step: 10,
+            monthChangeSpinner: true,
+            closeOnDateSelect: true,
+            closeOnWithoutClick: true,
+            closeOnInputClick: true,
+            timepicker: true,
+            datepicker: true,
+            defaultTime: false, // use formatTime format (ex. '10:00' for formatTime: 'H:i')
+            defaultDate: false, // use formatDate format (ex new Date() or '1986/12/08' or '-1970/01/05' or '-1970/01/05')
+            maxDate: new Date(),
+            yearStart: new Date().getFullYear() - 1,
+            yearEnd: new Date().getFullYear()
+        });
     </script>
 {% endblock js %}

@@ -29,7 +29,7 @@ trait Utils {
     }
     
     public static function getUtilProductQuantityMetrics(){
-        return array("litre", "barrel", "gallon");
+        return array("litres", "barrels", "gallons");
     }
     
     public static function getUtilCustomerStatus(){
@@ -38,6 +38,10 @@ trait Utils {
     
     public static function getUtilOrderStatus(){
         return array("active", "cancelled", "completed");
+    }
+    
+    public static function getUtilOrderDeliveryStatus(){
+        return array("not-delivered", "partial-delivery", "delivered");
     }
     
     public static function getUtilPaymentOptions(){
@@ -53,7 +57,11 @@ trait Utils {
     }
     
     public static function getUtilUserRoles(){
-        return array("ROLE_SALES_MANAGER","ROLE_SALES_PERSONNEL", "ROLE_ASSET_MANAGER");
+        return array("ROLE_MANAGER_SALES","ROLE_PERSONNEL_SALES", "ROLE_MANAGER_FACILITY", "ROLE_MANAGER_LOADING", "ROLE_PERSONNEL_LOADING");
+    }
+    
+    public static function getUtilLoadingStatus(){
+        return array("loading", "on transit", "delivered with dispute", "delivered");
     }
 
 }

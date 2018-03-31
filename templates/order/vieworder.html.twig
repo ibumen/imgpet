@@ -74,7 +74,13 @@
                                         <td>Unit Price (per {{order.product.getUnitMetric()|capitalize}}): </td><td>&#8358;{{order.unitPrice|number_format(2,'.',',')}}</a></td>
                                     </tr>
                                     <tr>
-                                        <td>Quantity: </td><td>{{order.quantity}} {{order.product.getUnitMetric()|capitalize}}</td>
+                                        <td>Quantity Ordered: </td><td>{{order.quantity}} {{order.product.getUnitMetric()|capitalize}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quantity Delivered: </td><td>{{order.quantityDelivered}} {{order.product.getUnitMetric()|capitalize}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delivery Location: </td><td>{{deliverylocation ?: order.getDeliveryLocation()}}</td>
                                     </tr>
                                     <tr>
                                         <td>Amount Payable: </td><td>&#8358;{{(order.getAmountPayable())|number_format(2,'.',',')}}</td>
@@ -83,10 +89,13 @@
                                         <td>Amount Due: </td><td>&#8358;{{(order.getAmountDue())|number_format(2,'.',',')}}</td>
                                     </tr>
                                     <tr>
-                                        <td>No. of Transactions: </td><td>{{order.transactions|length}}</td>
+                                        <td>No. of Payments: </td><td>{{order.transactions|length}}</td>
                                     </tr>
                                     <tr>
-                                        <td>Status: </td><td>{{order.orderStatus|capitalize}}</td>
+                                        <td>Payment Status: </td><td>{{order.orderStatus|capitalize}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delivery Status: </td><td>{{order.orderDeliveryStatus|capitalize}}</td>
                                     </tr>
                                     {% if order.orderStatus != 'active' %}
                                         <tr>
@@ -122,13 +131,13 @@
                                     <br />
                                 </div>
                                 <div class="col-xl-4 col-sm-12">
-                                    <div class="title" style="text-align: center;"><i class="icn icon-check"></i><br />TRANSACTION</div>
+                                    <div class="title" style="text-align: center;"><i class="icn icon-check"></i><br />PAYMENT (THIS ORDER)</div>
                                     <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
                                         <div style="min-height: 100%;" class="content">
                                             <ul class="list-unstyled orderpagelink">
-                                                <li><a href="{{(order.orderstatus!='active')?"javascript:void(0);":path('addtransaction',{'orderid':order.id})}}"><span class="icon-check"> </span> Make Payment</a></li>
-                                                <li><a href="{{path('viewtransaction',{'id':order.id, 'transid':'last-order'})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Trxn</a></li>
-                                                <li><a href="{{path('listtransaction',{'orderid':order.id})}}"><span class="icon ion-ios-eye-outline"> </span> View All Trxn</a></li>
+                                                <li><a href="{{(order.orderstatus!='active')?"javascript:void(0);":path('addtransaction',{'orderid':order.id})}}"><span class="icon-check"> </span> Add Payment</a></li>
+                                                <li><a href="{{path('viewtransaction',{'id':order.id, 'transid':'last-order'})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Payment</a></li>
+                                                <li><a href="{{path('listtransaction',{'orderid':order.id})}}"><span class="icon ion-ios-eye-outline"> </span> View All Payments</a></li>
                                             </ul>
                                         </div>
                                     </div>

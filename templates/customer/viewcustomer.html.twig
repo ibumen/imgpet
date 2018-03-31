@@ -96,12 +96,12 @@
                                     <br />
                                 </div>
                                 <div class="col-xl-4 col-sm-12">
-                                    <div class="title" style="text-align: center;"><i class="icn icon-check"></i><br />TRANSACTION</div>
+                                    <div class="title" style="text-align: center;"><i class="icn icon-check"></i><br />PAYMENTS</div>
                                     <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
                                         <div style="min-height: 100%;" class="content">
                                             <ul class="list-unstyled customerpagelink">
-                                                <li><a href="{{path('maketransaction',{'customerid':customer.id})}}"><span class="icon-check"> </span> Add Transaction</a></li>
-                                                <li><a href="{{path('viewtransaction',{'id':customer.id,'transid':'last-customer'})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Trxn</a></li>
+                                                <li><a href="{{path('maketransaction',{'customerid':customer.id})}}"><span class="icon-check"> </span> Make Payment</a></li>
+                                                <li><a href="{{path('viewtransaction',{'id':customer.id,'transid':'last-customer'})}}"><span class="icon ion-ios-eye-outline"> </span> View Last Payment</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -134,7 +134,7 @@
                                     <small>Summary of Last Order </small> <br />
                                     {% if lastorder is defined and lastorder is not empty %}
                                         Order: <br /><b>{{lastorder.getOid()}}</b><br />
-                                        Total Amt: <br /><b>&#8358;{{lastorder.getAmountPayable()|number_format(2,'.',',')}}</b><br />
+                                        Amt Payable: <br /><b>&#8358;{{lastorder.getAmountPayable()|number_format(2,'.',',')}}</b><br />
                                         Amt Paid: <br /><b style="color:#078230;">&#8358;{{lastorder.getAmountPaid()|number_format(2,'.',',')}}</b><br />
                                         Amt Due:<br /><b style="color:red;">&#8358;{{lastorder.getAmountDue()|number_format(2,'.',',')}}</b> 
                                     {% else %}
@@ -144,10 +144,10 @@
                             </div>
                             <div class="statistic d-flex align-items-center bg-white has-shadow">
                                 <div class="text">
-                                    <small>Summary of Last Transaction</small><br />
+                                    <small>Summary of Last Payment</small><br />
                                     {% if lasttrxn is defined and lasttrxn is not empty %}
                                         Trxn Date: <br /><b>{{lasttrxn.transDate|date('d/m/Y h:iA')}}</b><br />
-                                        Trxn: <br /><b>{{lasttrxn.getTid()}}</b><br />
+                                        Trxn ID: <br /><b>{{lasttrxn.getTid()}}</b><br />
                                         Order: <br /><b>{{lasttrxn.order.getOid()}}</b><br />
                                         Amt Paid: <br /><b style="color:#078230;">&#8358;{{lasttrxn.amountPaid|number_format(2,'.',',')}}</b>
                                         {% else %}
@@ -167,7 +167,7 @@
                             </div>
                             <div class="statistic d-flex align-items-center bg-white has-shadow">
                                 <div class="text">
-                                    <small># of Unsettled Sales Orders</small><br />
+                                    <small># of Unsettled Orders</small><br />
                                     <b>{{unsettledorder|length}}</b>
                                 </div>
                             </div>

@@ -1,0 +1,119 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+{% block stylesheet %}
+    #transactiontable tr td:first-child{
+    font-weight:bold;
+    }
+    .transactionpagelink li{
+    border-bottom-style:dotted;
+    border-bottom-width: 1px;
+    padding-bottom: 1px;
+    }
+    .transactionpagelink li a{
+    color: rgb(104, 106, 118);
+    font-family: "Poppins", san-serif;
+    font-weight:300;
+    font-size: 14px;
+    padding:5px;
+    }
+    .icn{
+    font-size:30px;
+    }
+
+{% endblock stylesheet %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex align-content-center">
+                        <h3 class="h4">Detail of Truck Expense</h3>
+                    </div>
+                    <div class="card-body">                    
+                        <table class="table table-striped table-sm table-bordered table-hover">
+                            <tbody>
+                                <tr>
+                                    <td>Date of Expense: </td><td>{{expense.getDateOfExpense|date('D jS F, Y')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Date of Entry: </td><td>{{expense.dateRecorded|date('D jS F, Y')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Entered By: </td><td class='toverflow'>{{expense.getEnteredBy().getFullName()}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Truck: </td><td class='toverflow'>{{expense.truck.getTruckNumber()}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Amount Expended: </td><td>&#8358;{{expense.getAmount()|number_format(2,'.',',')}}</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Reason for Expense: </td><td>{{expense.getReason()}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-3">
+                {% if(expense is defined) %}
+                    <section class="no-padding-bottom no-margin-top no-padding-top">
+                        <div class="container ">
+                            <div class="row bg-white has-shadow">
+                                <div class="col">
+                                    <div class="title" style="text-align: center;"><i class="icn ion-wrench"></i><br />ACTIONS</div>
+                                    <div class="item d-flex">
+                                        <div style="min-height: 100%;" class="content">
+                                            <ul class="list-unstyled transactionpagelink">
+                                                <li><a href="#" class="delbtn" data-id = "{{expense.id}}"><span class="icon ion-ios-trash-outline"> </span> Delete This Expense</a></li>
+                                                <li><a href="{{path('listtruckexpense')}}"><span class="icon ion-ios-list-outline"> </span> Back to List</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block js %}
+    <script type='text/javascript'>
+        var loadinghtml = "<span class='icon ion-android-sync del-loading'></span>";
+
+        $(document).on("click", ".delbtn", function (event) {
+            event.preventDefault();
+            if (window.confirm("Are you sure you want to delete this truck expense?")) {
+                dis = $(this);
+                var txt = dis.text();
+                dis.html(loadinghtml);
+                dis.addClass("disabled");
+                $.ajax({
+                    url: '{{path('del_truck_expense', {'truckexpenseid':'0'})}}' + dis.attr('data-id'),
+                    method: 'POST'
+                }).done(function (data) {
+                    dis.removeClass("disabled");
+                    //alert("here");
+                    if (data == "error_1") {//Loading data not found
+                        alert("Truck expense not found.");
+                        dis.text(txt);
+                    } else if (data == "error_4") {// Server error
+                        alert("One or more records is associated with this truck expense.");
+                        dis.text(txt);
+                    } else if (data == "error_3") {// Server error
+                        alert("Server error.");
+                        dis.text(txt);
+                    } else {
+                        document.location = '{{path('listtruckexpense')}}';
+                    }
+                });
+            }
+        });
+
+    </script>
+{% endblock js %}

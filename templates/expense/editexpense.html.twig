@@ -1,0 +1,77 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+
+{% block corelinks %}
+    {{parent()}}
+    <link rel="stylesheet" href="{{asset('vendor/jqueryscript/jquery.datetimepicker.min.css')}}">
+{% endblock corelinks %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-2">
+        </div>
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex align-content-center">
+                    <h3 class="h4">Add Misc. Expense</h3>
+                </div>
+                <div class="card-body">
+                    {% for flash_message in app.flashes('registrationsuccess') %}
+                        <div class="alert alert-success" role="alert">
+                            {{ flash_message }}
+                        </div>
+                    {% endfor %}
+                    {{form(form, {'attr': {'novalidate': 'novalidate'}})}}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2">
+        </div>
+
+    </div>
+{% endblock content %}
+{% block corescripts %}
+    {{ parent()}}
+    <script src="{{asset('vendor/jqueryscript/jquery.datetimepicker.full.min.js')}}"></script>
+{% endblock corescripts %}
+{% block js %}
+    <script type='text/javascript'>
+        /*
+         $(".date").datepicker({
+         dateFormat: "yy-mm-dd",
+         changeMonth: true,
+         changeYear:true,
+         currentText:'Now',
+         maxDate:'+0d',
+         /*minDate:'-20d',
+         * yearRange: "c-10:c+10"*/
+        /*numberOfMonths :1,
+         selectOtherMonths: false,
+         showOtherMonths: true,
+         showAnim:'fadeIn',
+         duration:'slow',
+         showButtonPanel:true           
+         });
+         */
+        var dt = new Date().setDate(new Date().getDate() - 20);
+        $(".date").datetimepicker({
+            format: 'Y-m-d H:i:s',
+            formatTime: 'H:i',
+            formatDate: 'Y-m-d',
+            step: 10,
+            monthChangeSpinner: true,
+            closeOnDateSelect: true,
+            closeOnWithoutClick: true,
+            closeOnInputClick: true,
+            timepicker: true,
+            datepicker: true,
+            defaultTime: false, // use formatTime format (ex. '10:00' for formatTime: 'H:i')
+            defaultDate: false, // use formatDate format (ex new Date() or '1986/12/08' or '-1970/01/05' or '-1970/01/05')
+            maxDate: new Date(),
+            yearStart: new Date().getFullYear() - 1,
+            yearEnd: new Date().getFullYear()
+        });
+
+    </script>
+{% endblock js %}
+

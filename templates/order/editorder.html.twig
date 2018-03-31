@@ -37,6 +37,24 @@
 {% endblock corescripts %}
 {% block js %}
     <script type='text/javascript'>
+        $("#order_locationname").parent().hide();
+
+
+        $(document).on("click", "#order_fromstation_0", function (event) {
+            if ($(this).prop("checked")) {
+                $("#order_locationname").parent().show();
+                $("#order_deliveryLocation").val("").parent().hide();
+            } else {
+                $("#order_locationname").val("").parent().hide();
+                $("#order_deliveryLocation").parent().show();
+            }
+        });
+
+        $(document).on("change", "#order_locationname", function (event) {
+            $("#order_deliveryLocation").val($("#order_locationname option:selected").attr("data-station"));
+
+
+        });
         $(document).on("change", "#transaction_order", function (event) {
             $("#transaction_amountPaid").val($("#transaction_order option:selected").attr("data-amtdue"));
         });

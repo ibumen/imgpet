@@ -14,13 +14,13 @@ use Symfony\Component\Form\Extension\Core\Type\{
     SubmitType
 };
 use App\Form\{
-    OrderType,
-    TransactionType
+    OrderType
 };
 use App\Entity\{
     Order,
     Customer,
-    Transaction
+    Transaction,
+    ProductDistribution
 };
 Use Doctrine\ORM\EntityManagerInterface;
 
@@ -30,11 +30,11 @@ class OrderController extends Controller {
      * @Route("/order/list/{customerid}/{status}", name="listorder", requirements={"customerid":"\d+","status":"active|completed|cancelled"})
      */
     public function listOrder($customerid = null, $status = null) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         $arrdata = array("page" => "listorder");
         if (isset($customerid)) {
             $em = $this->getDoctrine()->getRepository(\App\Entity\Order::class);
-            $orders = (!isset($status) ? ($em->findByCustomer($customerid, array(), array("orderDate" => "DESC"))) : ($em->findAllStatusOrder($status, $customerid, array("order" => "DESC"))));
+            $orders = (!isset($status) ? ($em->findByCustomer($customerid, array("orderDate" => "DESC"))) : ($em->findAllStatusOrder($status, $customerid, array("order" => "DESC"))));
             if (count($orders)) {
                 $customer = $orders[0]->getCustomer();
                 $arrdata['customer'] = $customer;
@@ -51,7 +51,7 @@ class OrderController extends Controller {
      * @Route("/order/add/{customerid}", name="addorder", requirements={"customerid":"\d+"})
      */
     public function addOrder(Request $request, Swift_Mailer $mailer, $customerid = null) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         // replace this line with your own code!
         $order = new Order();
 
@@ -94,7 +94,7 @@ class OrderController extends Controller {
 
             //echo $order->getDateRecorded()->format("Y-m-d"); exit();
             /*             * ****************** */
-            if ($form->get('maketrans')->getData() == true) {
+            if ($form->get('maketrans')->getData() == true || $order->getCustomer()->getCid() == "C00000000000") {
                 $transaction = new Transaction();
                 $transaction->setDateRecorded($order->getDateRecorded());
                 $tid = "TRXN";
@@ -114,7 +114,11 @@ class OrderController extends Controller {
                     $tid .= $dtstr . (($sn < 10) ? ("00$sn") : (($sn < 100) ? ("0$sn") : ($sn)));
                 }
                 $transaction->setTid($tid);
-                $transaction->setAmountPaid($form->get("Transaction")->get("amountPaid")->getData());
+                if ($order->getCustomer()->getCid() == "C00000000000") {
+                    $transaction->setAmountPaid($order->getAmountDue());
+                } else {
+                    $transaction->setAmountPaid($form->get("Transaction")->get("amountPaid")->getData());
+                }
                 $transaction->setPaymentMethod($form->get("Transaction")->get("paymentMethod")->getData());
                 $transaction->setOrder($order);
                 $transaction->setTransDate($order->getOrderDate());
@@ -136,7 +140,7 @@ class OrderController extends Controller {
                     /* Mailer                    * ****** */
                     if (!empty($customeremail)) {
                         $message1 = (new \Swift_Message('Order Confirmation'))
-                                ->setFrom('contactenesi@gmail.com')
+                                ->setFrom('auto_confirm@imgpet.com')
                                 ->setTo($customeremail)
                                 ->setBody(
                                 $this->renderView(
@@ -146,7 +150,7 @@ class OrderController extends Controller {
                         );
                         $mailer->send($message1);
                         $message2 = (new \Swift_Message('Payment Notification'))
-                                ->setFrom('contactenesi@gmail.com')
+                                ->setFrom('auto_confirm@imgpet.com')
                                 ->setTo($customeremail)
                                 ->setBody(
                                 $this->renderView(
@@ -168,7 +172,7 @@ class OrderController extends Controller {
                 /* Mailer                    * ****** */
                 if (!empty($customeremail)) {
                     $message = (new \Swift_Message('Order Confirmation'))
-                            ->setFrom('contactenesi@gmail.com')
+                            ->setFrom('auto_confirm@imgpet.com')
                             ->setTo($customeremail)
                             ->setBody(
                             $this->renderView(
@@ -193,7 +197,7 @@ class OrderController extends Controller {
      * @Route("/order/delete/{orderid}", name="deleteorder", requirements={"orderid":"\d+"})
      */
     public function deleteOrder(EntityManagerInterface $emi, Request $request, $orderid) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_MANAGER');
+        $this->denyAccessUnlessGranted('ROLE_MANAGER_SALES');
         $order = $emi->getRepository(Order::class)->find($orderid);
         if ($order && null !== $order) {
             $this->addFlash("orderdeletion", "Cannot delete order!");
@@ -201,11 +205,13 @@ class OrderController extends Controller {
         $oid = $order->getOid();
         if (count($order->getTransactions())) {
             $this->addFlash("orderdeletion", "Cannot delete order '$oid'!");
-        } else {
+        } else if ($order->getOrderDeliveryStatus()!="not-delivered"){
+            $this->addFlash("orderdeletion", "Cannot delete order '$oid'!");
+        }else {
 
             $repo = $emi->getRepository(Order::class);
             $result = $repo->deleteOrder($orderid);
-            
+
             if ($result) {
                 $this->addFlash("orderdeletion", "Order '$oid' was deleted successfull!");
             } else {
@@ -220,7 +226,7 @@ class OrderController extends Controller {
      * @Route("/order/edit/{orderid}", name="editorder", requirements={"orderid":"\d+"})
      */
     public function editOrder(EntityManagerInterface $emi, Request $request, $orderid) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         $order = $emi->getRepository(Order::class)->find($orderid);
         if (!$order && null === $order) {
             throw new \InvalidArgumentException("Order does not exist!");
@@ -233,6 +239,8 @@ class OrderController extends Controller {
         if ($form->isSubmitted() && $form->isValid()) {
             if (count($order->getTransactions())) {
                 $form->addError(new \Symfony\Component\Form\FormError("One or more transactions have been made on this order"));
+            } else if ($order->getOrderDeliveryStatus() != "not-delivered") {
+                $form->addError(new \Symfony\Component\Form\FormError("This order might have been delivered to the client"));
             } else {
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($order);
@@ -251,7 +259,7 @@ class OrderController extends Controller {
      * @Route("/order/view/{orderid}/{customerid}", name="vieworder", requirements={"orderid":"\d+|last","customerid":"\d+"})
      */
     public function viewOrder(Request $request, $orderid, $customerid = null) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         // replace this line with your own code!
         $arrdata = array("page" => "vieworder");
 
@@ -281,7 +289,9 @@ class OrderController extends Controller {
         if (!$order) {
             $form->addError(new \Symfony\Component\Form\FormError("Order record not found!"));
         }
-
+        $rep2 = $em->getRepository(ProductDistribution::class);
+        $dl = $rep2->getDeliveryLocation($order);
+        $arrdata['deliverylocation'] = $dl;
         $arrdata['form'] = $form->createView();
 
 
@@ -293,7 +303,7 @@ class OrderController extends Controller {
      * @Route("/order/view", name="vorder")
      */
     public function vOrder(Request $request) {
-        $this->denyAccessUnlessGranted('ROLE_SALES_PERSONNEL');
+        $this->denyAccessUnlessGranted('ROLE_PERSONNEL_SALES');
         // replace this line with your own code!
         $form = $this->createFormBuilder(new \App\Utility\OrderFind())
                 ->setAction($this->generateUrl('vorder'))

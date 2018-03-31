@@ -5,7 +5,8 @@ namespace App\Form;
 use App\Entity\{
     Order,
     Customer,
-    Product
+    Product, 
+    FuelStation
 };
 use Symfony\Component\Form\{
     AbstractType,
@@ -20,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\{
     MoneyType,
     IntegerType,
     SubmitType,
+    TextType,
     ChoiceType
 };
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -37,7 +39,7 @@ class OrderType extends AbstractType {
                     "html5" => false,
                     "time_widget" => "single_text",
                     "widget" => "single_text",
-                    "attr"=> array("class"=>"date")
+                    "attr" => array("class" => "date")
                 ))
                 ->add('customer', EntityType::class, array("label" => "Customer/Agent: ",
                     "attr" => array("class" => "custom-select"),
@@ -68,7 +70,30 @@ class OrderType extends AbstractType {
                     },
                     "placeholder" => "Select Product"))
                 ->add('unitPrice', MoneyType::class, array("label" => "Unit Price: ", "currency" => "NGN", "grouping" => true))
-                ->add('quantity', IntegerType::class, array("label" => "Quantity: ", "scale" => 0));
+                ->add('quantity', IntegerType::class, array("label" => "Quantity: ", "scale" => 0))
+                ->add('fromstation', ChoiceType::class, array("expanded" => true,
+                    "multiple" => true,
+                    "choices" => array("Select from list of fuel stations" => false),
+                    "mapped" => false,
+                    "required" => false,
+                    "label" => false
+                ))
+                ->add('locationname', EntityType::class, array("mapped" => false, "label" => "Deliver Product To: ",
+                    "attr" => array("class" => "custom-select"),
+                    'class' => FuelStation::class,
+                    'query_builder' => function (EntityRepository $er) use ($options) {
+                        $qb = $er->createQueryBuilder('t');
+                        $qb = $qb->orderBy('t.stationName', 'DESC');
+                        return $qb;
+                    },
+                    'choice_label' => function ($station) {
+                        return $station->getStationName();
+                    },
+                    'choice_attr' => function ($station) {
+                        return ["data-station" => $station->getStationName()];
+                    },
+                    "placeholder" => "Select Fuel Station"))
+                ->add('deliveryLocation', TextType::class, array("label" => "Delivery Product To", "required" => true));
 
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
@@ -77,17 +102,17 @@ class OrderType extends AbstractType {
             $form = $event->getForm();
 
             if (!$order || null === $order->getId()) {
-                $form->add('maketrans', ChoiceType::class, array("expanded"=>true,
-                    "multiple"=>true,
-                    "choices"=> array("Include Transaction"=>true),
-                    "mapped"=>false,
-                    "required"=>false,
-                    "label"=>false
-                    ))
-                ->add('Transaction', TransactionType::class, array("mapped"=>false,
-                    "required"=>false,
-                    "label"=>false))
-                ->add('Place Order', SubmitType::class, array("label" => "Place Order"));
+                $form->add('maketrans', ChoiceType::class, array("expanded" => true,
+                            "multiple" => true,
+                            "choices" => array("Include Transaction" => true),
+                            "mapped" => false,
+                            "required" => false,
+                            "label" => false
+                        ))
+                        ->add('Transaction', TransactionType::class, array("mapped" => false,
+                            "required" => false,
+                            "label" => false))
+                        ->add('Place Order', SubmitType::class, array("label" => "Place Order"));
             } else {
                 $form->add('Modify Order', SubmitType::class, array("label" => "Modify Order"));
             }

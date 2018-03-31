@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\{
     Request
 };
 
-
 class SecurityController extends Controller {
 
     /**
@@ -25,29 +24,32 @@ class SecurityController extends Controller {
     public function login(Request $request, AuthenticationUtils $authUtils) {
         // get the login error if there is one
         $error = $authUtils->getLastAuthenticationError();
-        
+
         // last username entered by the user
         $lastUsername = $authUtils->getLastUsername();
-if(!$this->getUser()){
-    //echo $error->getMessage(); exit();
-        return $this->render('security/login.html.twig', array(
-                    'last_username' => $lastUsername,
-                    'error' => $error,
-        ));
+        if (!$this->getUser()) {
+            //echo $error->getMessage(); exit();
+            $arrdata = array(
+                'last_username' => $lastUsername);
+            if (!empty($error)) {
+                $arrdata['error'] = $error;
+            }
+            return $this->render('security/login.html.twig', $arrdata);
+        }
+        return $this->redirectToRoute('home');
     }
-    return $this->redirectToRoute('listuser');
-    }
-    
+
     /**
      * @Route("/logincheck", name="logincheck")
-     */    
-    public function loginCheck(Request $request){
+     */
+    public function loginCheck(Request $request) {
         $this->forward("\App\Controller\SecurityController::login");
     }
+
     /**
      * @Route("/logout", name="logout")
-     */    
-    public function logout(Request $request){
+     */
+    public function logout(Request $request) {
         
     }
 

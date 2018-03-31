@@ -1,0 +1,142 @@
+{# empty Twig template #}
+{% extends "base.html.twig" %}
+{% block stylesheet %}
+    #ordertable tr td:first-child{
+    font-weight:bold;
+    }
+    .orderpagelink li{
+    border-bottom-style:dotted;
+    border-bottom-width: 1px;
+    padding-bottom: 1px;
+    }
+    .orderpagelink li a{
+    color: rgb(104, 106, 118);
+    font-family: "Poppins", san-serif;
+    font-weight:300;
+    font-size: 14px;
+    padding:5px;
+    }
+    .icn{
+    font-size:30px;
+    }
+
+{% endblock stylesheet %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-11">
+                <div class="container no-padding">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!--<form class="form-inline">
+                                        <div class="form-group">
+                                            <input type="text" id="oid" class="form-control-sm mr-3" placeholder="Order ID">
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-primary btn-sm">Load</button>
+                                        </div>
+                                    </form>-->
+                                    {{form(form)}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if(loading is defined) %}
+                    <div class="card">
+                        <div class="card-header d-flex align-content-center">
+                            <h3 class="h4">Details of Loading ({{loading.getLid()}})</h3>
+                        </div>
+                        <div class="card-body">                    
+                            <table id="ordertable" class="table table-striped table-sm table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <td>Loading Id: </td><td>{{loading.lid}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Loading: </td><td>{{loading.loadingDate|date('D jS F, Y')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date of Entry: </td><td>{{loading.dateRecorded|date('D jS F, Y')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Entered By: </td><td class='toverflow'>{{loading.getCreatedBy.getFullName()}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Loading Depot: </td><td>{{loading.loadingDepot.getStationName()}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Product: </td><td>{{loading.product.getProductName()~'('~loading.product.getProductCode()~')'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>purchase Price (per {{loading.product.getUnitMetric()|capitalize}}): </td><td>&#8358;{{loading.getPurchasePrice|number_format(2,'.',',')}}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quantity: </td><td>{{loading.quantity|number_format(0,'.',',')}} {{loading.product.getUnitMetric()|capitalize}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Cost: </td><td>&#8358;{{(loading.quantity * loading.getPurchasePrice)|number_format(2,'.',',')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of Trucks Loaded: </td><td>{{loading.loadingRecords|length}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status: </td><td>{{loading.loadingStatus|capitalize}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <section class="no-padding-bottom no-margin-top no-padding-top">
+                        <div class="container ">
+
+                            <div class="row bg-white has-shadow">
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title" ><i class="icn icon-bill"></i><br />LOADING</div>
+                                    <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
+                                        <div class="content">
+                                            <ul class="list-unstyled orderpagelink">
+                                                <li><a href="{{(loading.getLoadingStatus()=='delivered' or loading.getLoadingStatus()=='delivered with dispute')?"javascript:void(0);":path('editloading',{'loadingid':loading.id})}}"><span class="icon-bill"> </span> Modify Loading</a></li>
+                                                <li><a id="delrec" href="{{(loading.loadingRecords|length >0)?"javascript:void(0);":path('deleteloading',{'loadingid':loading.id})}}"><span class="icon ion-ios-trash-outline"> </span> Delete Loading</a></li>
+                                                <li><a id="" href="{{path('viewloading',{'loadingid':loading.id})}}"><span class="icon icon-page"> </span>Loading Summary</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-xl-4 col-sm-12">
+                                    <div class="title"><i class="icn icon-check"></i><br />TRUCKS INFORMATION</div>
+                                    <div class="item d-flex border border-top-0 border-left-0 border-bottom-0">
+                                        <div style="min-height: 100%;" class="content">
+                                            <ul class="list-unstyled orderpagelink">
+                                                <li><a href="{{(loading.loadingstatus!='loading')?"javascript:void(0);":path('addloadingrecord',{'loadingid':loading.id})}}"><span class="icon-check"> </span> Add Truck</a></li>
+                                                <li><a href="{{path('listloadingrecord',{'loadingid':loading.id})}}"><span class="icon ion-ios-eye-outline"> </span> View All Loaded Trucks</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-xl-4 col-sm-12">
+
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+{% endblock content %}
+{% block js %}
+    <script type='text/javascript'>
+        $(document).on("click","#delrec",function(event){
+            if(!window.confirm("Are you sure you want to delete this loading?")){
+                event.preventDefault();
+            }
+        });
+        </script>
+{% endblock js %}
